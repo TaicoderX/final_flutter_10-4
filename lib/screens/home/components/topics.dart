@@ -1,9 +1,12 @@
+import 'package:dynamic_multi_step_form/dynamic_json_form.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/controllers/user.controller.dart';
 import 'package:shop_app/screens/flipcard/flipcard_screen.dart';
+import 'package:shop_app/screens/folders/components/topic_factory.dart';
 import 'package:shop_app/screens/home/components/new_user.dart';
 import 'package:shop_app/screens/home/components/special_cards.dart';
+import 'package:shop_app/screens/local/local_storage.dart';
 
 import 'section_title.dart';
 
@@ -67,6 +70,7 @@ class _SpecialOffersState extends State<Topics> {
       setState(() {
         topics = data['topics'] ?? [];
         filteredTopics = topics;
+        LocalStorageService().saveData('topics', topics);
       });
     } catch (e) {
       print('Exception occurred while loading topics: $e');
@@ -90,31 +94,35 @@ class _SpecialOffersState extends State<Topics> {
           child: Row(
             children: List.generate(
               filteredTopics.length,
-              (index) => SpecialOfferCard(
-                image: filteredTopics[index]['ownerId']['profileImage'] ?? '',
-                title: filteredTopics[index]['topicNameEnglish'] ?? '',
-                words: filteredTopics[index]['vocabularyCount'] ?? 0,
-                name: filteredTopics[index]['ownerId']['username'] ?? '',
-                press: () {
-                  Navigator.pushNamed(
-                    context,
-                    FlipCardScreen.routeName,
-                    arguments: {
-                      "_id": filteredTopics[index]["_id"],
-                      "title": filteredTopics[index]["topicNameEnglish"],
-                      'image': filteredTopics[index]['ownerId']
-                              ['profileImage'] ??
-                          '',
-                      'username':
-                          filteredTopics[index]['ownerId']['username'] ?? '',
-                      'description':
-                          filteredTopics[index]["descriptionEnglish"] ?? '',
-                      'terms':
-                          filteredTopics[index]["vocabularyCount"].toString(),
-                    },
-                  );
-                },
-              ),
+              // (index) => SpecialOfferCard(
+              //   image: filteredTopics[index]['ownerId']['profileImage'] ?? '',
+              //   title: filteredTopics[index]['topicNameEnglish'] ?? '',
+              //   words: filteredTopics[index]['vocabularyCount'] ?? 0,
+              //   name: filteredTopics[index]['ownerId']['username'] ?? '',
+              //   press: () {
+              //     //   Navigator.pushNamed(
+              //     //     context,
+              //     //     FlipCardScreen.routeName,
+              //     //     arguments: {
+              //     //       "_id": filteredTopics[index]["_id"],
+              //     //       "title": filteredTopics[index]["topicNameEnglish"],
+              //     //       'image': filteredTopics[index]['ownerId']
+              //     //               ['profileImage'] ??
+              //     //           '',
+              //     //       'username':
+              //     //           filteredTopics[index]['ownerId']['username'] ?? '',
+              //     //       'description':
+              //     //           filteredTopics[index]["descriptionEnglish"] ?? '',
+              //     //       'terms':
+              //     //           filteredTopics[index]["vocabularyCount"].toString(),
+              //     //     },
+              //     //   );
+                  
+              //   },
+                
+              // ),
+              (index) => TopicWidgetFactory.createWidget(
+                      filteredTopics[index], context, false)
             ),
           ),
         ),

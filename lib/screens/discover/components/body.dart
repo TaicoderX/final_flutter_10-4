@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/controllers/topic.dart';
 import 'package:shop_app/screens/discover/components/not_found.dart';
-import 'package:shop_app/screens/flipcard/flipcard_screen.dart';
-import 'package:shop_app/screens/folders/components/topic_in_folder.dart';
+import 'package:shop_app/screens/folders/components/topic_factory.dart';
 
 class Body extends StatefulWidget {
   final String searchQuery;
@@ -107,22 +106,23 @@ class _BodyState extends State<Body> {
                 itemBuilder: (context, index) {
                   var topic = filtered[index];
 
-                  return TopicInFolder(
-                    image: topic['ownerId']['profileImage'] ?? "",
-                    title: topic['topicNameEnglish'] ?? 'Title',
-                    words: topic['vocabularyCount'] ?? 0,
-                    name: topic['ownerId']['username'] ?? 'Name',
-                    press: () {
-                      Navigator.pushNamed(context, FlipCardScreen.routeName,
-                          arguments: {
-                            "_id": topic["_id"],
-                            "title": topic["topicNameEnglish"],
-                            'image': topic['ownerId']['profileImage'] ?? '',
-                            'username': topic['ownerId']['username'] ?? '',
-                            'terms': topic['vocabularyCount'].toString(),
-                          });
-                    },
-                  );
+                  // return TopicInFolder(
+                  //   image: topic['ownerId']['profileImage'] ?? "",
+                  //   title: topic['topicNameEnglish'] ?? 'Title',
+                  //   words: topic['vocabularyCount'] ?? 0,
+                  //   name: topic['ownerId']['username'] ?? 'Name',
+                  //   press: () {
+                  //     Navigator.pushNamed(context, FlipCardScreen.routeName,
+                  //         arguments: {
+                  //           "_id": topic["_id"],
+                  //           "title": topic["topicNameEnglish"],
+                  //           'image': topic['ownerId']['profileImage'] ?? '',
+                  //           'username': topic['ownerId']['username'] ?? '',
+                  //           'terms': topic['vocabularyCount'].toString(),
+                  //         });
+                  //   },
+                  // );
+                  return TopicWidgetFactory.createWidget(topic, context, false);
                 },
               ),
             ],

@@ -1,28 +1,33 @@
 import 'package:flutter/material.dart';
 
 class TopicInFolder extends StatelessWidget {
-  
   const TopicInFolder({
     Key? key,
-     required this.title,
-     required this.image,
-     required this.words,
-     required this.press,
-     required this.name,
+    required this.title,
+    required this.image,
+    required this.words,
+    required this.press,
+    required this.name,
+    required this.isLarge,
   });
 
+  final bool isLarge;
   final String title, image, name;
   final int words;
   final GestureTapCallback press;
 
   @override
   Widget build(BuildContext context) {
+    double width_box = MediaQuery.of(context).size.width;
+    double small = width_box - 100;
+    double large = width_box - 50;
     return Padding(
-      padding: const EdgeInsets.all(10.0),
+      padding: const EdgeInsets.only(left: 20, right: 10, bottom: 10, top: 10),
       child: GestureDetector(
         onTap: press,
         child: SizedBox(
-          width: 300,
+          width: isLarge ? large : small,
+          // width: 300,
           height: 130,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(20),

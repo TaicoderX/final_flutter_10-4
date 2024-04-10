@@ -9,20 +9,26 @@ class SpecialFolder extends StatelessWidget {
     required this.press,
     required this.name,
     required this.sets,
+    required this.isLarge,
   }) : super(key: key);
 
+  final bool isLarge;
   final String title, image, name;
   final int words, sets;
   final GestureTapCallback press;
 
   @override
   Widget build(BuildContext context) {
+    double width_box = MediaQuery.of(context).size.width;
+    double small = width_box - 100;
+    double large = width_box - 50;
     return Padding(
-      padding: const EdgeInsets.only(left: 20),
+      padding: const EdgeInsets.only(left: 20, right: 10, top: 10, bottom: 10),
       child: GestureDetector(
         onTap: press,
         child: SizedBox(
-          width: 300,
+          // width: 300,
+          width: isLarge ? large : small,
           height: 100,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(20),
