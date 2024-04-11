@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:shop_app/screens/flashcard/components/congrats_screen.dart';
 
-import 'components/show_bottom_sheet.dart';
-
 class FlashcardsView extends StatefulWidget {
   static String routeName = '/flashcards';
 
@@ -28,15 +26,16 @@ class _FlashcardsViewState extends State<FlashcardsView> {
   bool shuffle = false;
   bool playAudio = false;
 
-  void updateSettings(bool newShuffle, bool newPlayAudio, String newSelectedFont) {
+  void updateSettings(
+      bool newShuffle, bool newPlayAudio, String newSelectedFont) {
     setState(() {
       shuffle = newShuffle;
       playAudio = newPlayAudio;
       selectedFont = newSelectedFont;
-      if(shuffle) {
+      if (shuffle) {
         flashcards.shuffle();
       }
-      if(selectedFont == 'Term') {
+      if (selectedFont == 'Term') {
         flashcards.forEach((element) {
           final temp = element['englishWord'];
           element['englishWord'] = element['vietnameseWord'];
@@ -54,12 +53,13 @@ class _FlashcardsViewState extends State<FlashcardsView> {
 
   @override
   void initState() {
-    super.initState();
     getFlashcards();
-    flutterTts = FlutterTts();
+    super.initState();
   }
 
   Future<void> getFlashcards() async {
+    flutterTts = FlutterTts();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (ModalRoute.of(context)?.settings.arguments != null) {
         final args = ModalRoute.of(context)?.settings.arguments as Map;
@@ -150,10 +150,6 @@ class _FlashcardsViewState extends State<FlashcardsView> {
 
   @override
   Widget build(BuildContext context) {
-    if (flashcards.isEmpty) {
-      return Container();
-    }
-
     return Scaffold(
       backgroundColor: const Color(0xFFF6F7FB),
       appBar: AppBar(
@@ -170,7 +166,7 @@ class _FlashcardsViewState extends State<FlashcardsView> {
                 color: Colors.grey[700],
               ),
               onPressed: () {
-                showCustomModalBottomSheet(context, updateSettings);
+                // showCustomModalBottomSheet(context, updateSettings);
               }),
           SizedBox(
             width: 10,

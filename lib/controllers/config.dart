@@ -37,3 +37,11 @@ String addTopicToFolder = folder + ":id/topics/:topicId";
 String editFolderUrl = folder + "/";
 String deleteFolderUrl = folder + "/";
 String deleteTopicInFolder = folder + ":id/topics/:topicId";
+
+
+// bookmark Vocab
+String bookmarkVocab = baseUrl + "/bookmarkVocabularies";
+
+String createBookmarkVocabUrl = bookmarkVocab;
+String getBookmarkVocabByUser = bookmarkVocab + "/vocabularies/";
+String deleteBookmarkVocabUrl = bookmarkVocab + "/";
