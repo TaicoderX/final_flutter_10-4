@@ -5,6 +5,7 @@ import 'dart:math';
 
 import 'package:shop_app/models/QuizData.dart';
 import 'package:shop_app/screens/quiz/components/quiz_option.dart';
+import 'package:shop_app/screens/quiz/components/statistic.dart';
 
 class QuizPage extends StatefulWidget {
   static String routeName = "quiz_page";
@@ -18,6 +19,7 @@ class _QuizPageState extends State<QuizPage> {
   int currentQuestionIndex = 0;
   List<QuizData> allQuizData = [];
   Set<int> usedQuestionIndices = {};
+  int wrongAnswer = 0;
 
   QuizData generateQuizData(Map<String, dynamic> args) {
     final vocabularies = List.from(args['vocabularies']);
@@ -34,7 +36,10 @@ class _QuizPageState extends State<QuizPage> {
 
     List<String> options = [question['vietnameseWord']];
     vocabularies.shuffle();
-    options.addAll(vocabularies.where((v) => v['vietnameseWord'] != question['vietnameseWord']).take(3).map((v) => v['vietnameseWord']));
+    options.addAll(vocabularies
+        .where((v) => v['vietnameseWord'] != question['vietnameseWord'])
+        .take(3)
+        .map((v) => v['vietnameseWord']));
     options.shuffle();
 
     return QuizData(
@@ -74,6 +79,8 @@ class _QuizPageState extends State<QuizPage> {
     } else {
       // Navigate to the home screen or the desired screen when quiz is finished.
       // Navigator.pushNamed(context, homeRouteName);
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => Statistic(wrongAnswer: wrongAnswer * 1.0, totalQuestion: allQuizData.length * 1.0)));
     }
   }
 
@@ -346,6 +353,7 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
+                wrongAnswer++;
                 Navigator.of(context).pop();
                 goToNextQuestion();
               },

@@ -1,5 +1,7 @@
+import 'package:dynamic_multi_step_form/dynamic_json_form.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:shop_app/screens/quiz/components/statistic.dart';
 
 class CongratsScreen extends StatefulWidget {
   static String routeName = "congrats";
@@ -26,6 +28,7 @@ class _CongratsScreenState extends State<CongratsScreen> {
     audioPlayer.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -133,24 +136,27 @@ class _CongratsScreenState extends State<CongratsScreen> {
             SizedBox(
               height: 40,
             ),
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [
-                  Colors.pink.shade500,
-                  Colors.pinkAccent.shade100,
-                ]),
-                shape: BoxShape.rectangle,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              height: 40,
-              width: MediaQuery.of(context).size.width / 1.2,
-              child: Center(
-                child: Text(
-                  'Statistic',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600),
+            InkWell(
+              onTap: () => {},
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: [
+                    Colors.pink.shade500,
+                    Colors.pinkAccent.shade100,
+                  ]),
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                height: 40,
+                width: MediaQuery.of(context).size.width / 1.2,
+                child: Center(
+                  child: Text(
+                    'Statistic',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600),
+                  ),
                 ),
               ),
             ),
