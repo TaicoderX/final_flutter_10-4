@@ -37,3 +37,22 @@ String addTopicToFolder = folder + ":id/topics/:topicId";
 String editFolderUrl = folder + "/";
 String deleteFolderUrl = folder + "/";
 String deleteTopicInFolder = folder + ":id/topics/:topicId";
+
+// bookmark Vocab
+String bookmarkVocab = baseUrl + "/bookmarkVocabularies";
+
+String createBookmarkVocabUrl = bookmarkVocab;
+String getAllBookmarkVocabByUser = bookmarkVocab + "/vocabularies/";
+String deleteBookmarkVocabUrl = bookmarkVocab + "/";
+
+// learning statistic
+String learningStatistic = baseUrl + "/learningStatistics";
+
+// get process learning
+String getProcessLearning = learningStatistic + "/topic/:topicId/progress";
+// update learning statistic
+String updateProcessLearning = learningStatistic + "/topic/:topicId/progress";
+// get learning statistics of users in a topic
+String learningOfUserInTopic = learningStatistic + "/topic/:topicId";
+// get user learning statistics for topic
+String learningStatisticForUser = learningStatistic + "/topic/:topicId/user/:userId";
