@@ -56,3 +56,9 @@ String updateProcessLearning = learningStatistic + "/topic/:topicId/progress";
 String learningOfUserInTopic = learningStatistic + "/topic/:topicId";
 // get user learning statistics for topic
 String learningStatisticForUser = learningStatistic + "/topic/:topicId/user/:userId";
+
+
+// achievement
+String achievement = baseUrl + "/achievements";
+String getAchievementByUser = achievement;
+String createAchievement = achievement;

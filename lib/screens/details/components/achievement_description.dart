@@ -22,7 +22,7 @@ class AchievementDescription extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Text(
-            achievement.title,
+            achievement.name,
             style: Theme.of(context).textTheme.titleLarge,
           ),
         ),
@@ -32,9 +32,7 @@ class AchievementDescription extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             width: 48,
             decoration: BoxDecoration(
-              color: achievement.isFavourite
-                  ? const Color(0xFFFFE6E6)
-                  : const Color(0xFFF5F6F9),
+              color: const Color(0xFFFFE6E6),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(20),
                 bottomLeft: Radius.circular(20),
@@ -42,11 +40,8 @@ class AchievementDescription extends StatelessWidget {
             ),
             child: SvgPicture.asset(
               "assets/icons/Heart Icon_2.svg",
-              colorFilter: ColorFilter.mode(
-                  achievement.isFavourite
-                      ? const Color(0xFFFF4848)
-                      : const Color(0xFFDBDEE4),
-                  BlendMode.srcIn),
+              colorFilter:
+                  ColorFilter.mode(const Color(0xFFFF4848), BlendMode.srcIn),
               height: 16,
             ),
           ),

@@ -26,8 +26,8 @@ class _SpecialOffersState extends State<Topics> {
 
   @override
   void initState() {
-    super.initState();
     loadTopics();
+    super.initState();
   }
 
   @override

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shop_app/models/Achievement.dart';
-import 'package:shop_app/screens/details/components/color_dots.dart';
 import 'package:shop_app/screens/details/components/achievement_description.dart';
 import 'package:shop_app/screens/details/components/achievement_images.dart';
 import 'package:shop_app/screens/details/components/top_rounded_container.dart';
@@ -43,35 +41,6 @@ class AchievementComponent extends StatelessWidget {
             ),
           ),
         ),
-        actions: [
-          Row(
-            children: [
-              Container(
-                margin: const EdgeInsets.only(right: 20),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Row(
-                  children: [
-                    const Text(
-                      "4.7",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.black,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    SvgPicture.asset("assets/icons/Star Icon.svg"),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
       ),
       body: ListView(
         children: [
@@ -83,14 +52,6 @@ class AchievementComponent extends StatelessWidget {
                 AchievementDescription(
                   achievement: achievement,
                   pressOnSeeMore: () {},
-                ),
-                TopRoundedContainer(
-                  color: const Color(0xFFF6F7F9),
-                  child: Column(
-                    children: [
-                      ColorDots(achievement: achievement),
-                    ],
-                  ),
                 ),
               ],
             ),

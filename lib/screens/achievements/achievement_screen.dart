@@ -4,10 +4,38 @@ import 'package:shop_app/components/achivement_card.dart';
 import 'package:shop_app/models/Achievement.dart';
 import 'package:shop_app/screens/achievements/components/achievement.dart';
 
+import '../../controllers/achievement.dart';
 
-class AchievementScreen extends StatelessWidget {
+class AchievementScreen extends StatefulWidget {
   static String routeName = "/achievement";
   const AchievementScreen({super.key});
+
+  @override
+  State<AchievementScreen> createState() => _AchievementScreenState();
+}
+
+class _AchievementScreenState extends State<AchievementScreen> {
+  List<Achievement> achievements = [];
+  @override
+  void initState() {
+    loadAchievements();
+    super.initState();
+  }
+
+  Future<void> loadAchievements() async {
+    getAllAchievement().then((achievementsMap) {
+      var achievementsList = achievementsMap['achievements'] as List<dynamic>;
+      List<Achievement> loadedAchievements =
+          achievementsList.map((achievementJson) {
+        return Achievement.fromJson(achievementJson);
+      }).toList();
+      setState(() {
+        achievements = loadedAchievements;
+      });
+    }).catchError((error) {
+      print("Failed to load achievements: $error");
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +56,7 @@ class AchievementScreen extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: GridView.builder(
-                itemCount: demoProducts.length,
+                itemCount: achievements.length,
                 gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                   maxCrossAxisExtent: 200,
                   childAspectRatio: 0.7,
@@ -36,12 +64,12 @@ class AchievementScreen extends StatelessWidget {
                   crossAxisSpacing: 16,
                 ),
                 itemBuilder: (context, index) => AchievementCard(
-                  achievement: demoProducts[index],
+                  achievement: achievements[index],
                   onPress: () => Navigator.pushNamed(
                     context,
                     AchievementComponent.routeName,
-                    arguments:
-                        AchievementDetailsArguments(achievement: demoProducts[index]),
+                    arguments: AchievementDetailsArguments(
+                        achievement: achievements[index]),
                   ),
                 ),
               ),

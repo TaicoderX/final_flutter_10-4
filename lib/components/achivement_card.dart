@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shop_app/models/Achievement.dart';
 
 import '../constants.dart';
@@ -35,19 +34,20 @@ class AchievementCard extends StatelessWidget {
                   color: kSecondaryColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Image.asset(achievement.images[0]),
+                child: Image.network(achievement.images[0]),
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              achievement.title,
+              achievement.description,
               style: Theme.of(context).textTheme.bodyMedium,
+              textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
             Center(
               child: Text(
-                "\$${achievement.price}",
+                "${achievement.name}",
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
