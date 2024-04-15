@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/screens/library/components/folders.dart';
 import 'package:shop_app/screens/library/components/studysets.dart';
+import 'package:shop_app/screens/studyset/studyset_screen.dart';
+
+import '../folders/new_folder_screen.dart';
 
 class LibraryScreen extends StatefulWidget {
   static String routeName = "/library";
@@ -10,7 +13,8 @@ class LibraryScreen extends StatefulWidget {
   _LibraryScreenState createState() => _LibraryScreenState();
 }
 
-class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProviderStateMixin {
+class _LibraryScreenState extends State<LibraryScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -29,13 +33,18 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Library', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+        title: const Text('Library',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
         centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () {
-              // Handle add button press
+              if (_tabController.index == 0) {
+                Navigator.pushNamed(context, StudySetScreen.routeName);
+              } else if (_tabController.index == 1) {
+                Navigator.pushNamed(context, NewFolderScreen.routeName);
+              }
             },
           ),
           const SizedBox(width: 15),
@@ -57,10 +66,12 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
                 ),
                 tabs: const [
                   Tab(
-                    child: Text('Study sets', style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: Text('Study sets',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                   ),
                   Tab(
-                    child: Text('Folders', style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: Text('Folders',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                   ),
                 ],
               ),
