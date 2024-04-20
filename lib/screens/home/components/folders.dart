@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/controllers/folder.dart';
 import 'package:shop_app/screens/folders/components/folder_factory.dart';
-import 'package:shop_app/screens/folders/folders_screen.dart';
-import 'package:shop_app/screens/home/components/special_folders.dart';
 import 'package:shop_app/screens/local/local_storage.dart';
 
 import 'section_title.dart';

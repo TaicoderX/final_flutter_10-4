@@ -2,10 +2,8 @@ import 'package:dynamic_multi_step_form/dynamic_json_form.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/controllers/user.controller.dart';
-import 'package:shop_app/screens/flipcard/flipcard_screen.dart';
 import 'package:shop_app/screens/folders/components/topic_factory.dart';
 import 'package:shop_app/screens/home/components/new_user.dart';
-import 'package:shop_app/screens/home/components/special_cards.dart';
 import 'package:shop_app/screens/local/local_storage.dart';
 
 import 'section_title.dart';
@@ -117,9 +115,7 @@ class _SpecialOffersState extends State<Topics> {
               //     //           filteredTopics[index]["vocabularyCount"].toString(),
               //     //     },
               //     //   );
-                  
               //   },
-                
               // ),
               (index) => TopicWidgetFactory.createWidget(
                       filteredTopics[index], context, false)

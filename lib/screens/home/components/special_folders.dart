@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class SpecialFolder extends StatelessWidget {
   const SpecialFolder({
@@ -86,7 +87,7 @@ class SpecialFolder extends StatelessWidget {
                         SizedBox(width: 10),
                         CircleAvatar(
                           radius: 15,
-                          backgroundImage: NetworkImage(image),
+                          backgroundImage: CachedNetworkImageProvider(image),
                         ),
                         SizedBox(width: 10),
                         Text(

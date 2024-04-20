@@ -26,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
-    double headerHeight = screenHeight < 730 ? 220.0 : 170;
+    double headerHeight = screenHeight < 730 ? 220.0 : 190;
     return Scaffold(
       extendBody: true,
       appBar: PreferredSize(
