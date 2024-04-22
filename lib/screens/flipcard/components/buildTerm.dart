@@ -84,6 +84,7 @@ class _CreateTermState extends State<CreateTerm> {
               child: Icon(
                 isFavorite ? Icons.star : Icons.star_border,
                 color: Colors.grey,
+                size: 30,
               ),
             ),
           ),
@@ -106,6 +107,7 @@ class _CreateTermState extends State<CreateTerm> {
                     ? Icons.volume_up_outlined
                     : Icons.volume_off_outlined,
                 color: Colors.grey,
+                size: 30,
               ),
             ),
           ),

@@ -3,7 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 
 class Statistic extends StatelessWidget {
   double totalQuestion;
-  
+
   double wrongAnswer;
 
   Statistic({
@@ -16,12 +16,21 @@ class Statistic extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.indigo.shade700,
+      appBar: AppBar(
+        backgroundColor: Colors.indigo.shade700,
+        leading: IconButton(
+          icon: const Icon(Icons.close, size: 30,),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
       body: PieChart(
         PieChartData(
           sections: [
             PieChartSectionData(
               color: Colors.green,
-              value: wrongAnswer,
+              value: totalQuestion - wrongAnswer,
               title: 'Đúng',
               radius: 50,
               titleStyle: TextStyle(
@@ -32,7 +41,7 @@ class Statistic extends StatelessWidget {
             ),
             PieChartSectionData(
               color: Colors.red,
-              value: totalQuestion,
+              value: wrongAnswer,
               title: 'Sai',
               radius: 50,
               titleStyle: TextStyle(

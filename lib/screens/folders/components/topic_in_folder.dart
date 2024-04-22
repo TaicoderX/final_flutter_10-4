@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class TopicInFolder extends StatelessWidget {
   const TopicInFolder({
@@ -77,7 +78,7 @@ class TopicInFolder extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 15,
-                        backgroundImage: NetworkImage(image),
+                        backgroundImage: CachedNetworkImageProvider(image),
                       ),
                       const SizedBox(
                         width: 10,
