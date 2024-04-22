@@ -4,6 +4,7 @@ import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/controllers/topic.dart';
 import 'package:shop_app/controllers/user.controller.dart';
+import 'package:shop_app/screens/add_folder/add_folder_to_topic.dart';
 import 'package:shop_app/screens/flipcard/components/custom_listtile.dart';
 import 'package:shop_app/screens/flipcard/components/edit_topic.dart';
 import 'package:shop_app/screens/init_screen.dart';
@@ -27,6 +28,7 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
   String title = '';
   String description = '';
   late String topicId;
+  late bool isDiscover;
 
   @override
   void didChangeDependencies() {
@@ -38,6 +40,7 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
     final args = ModalRoute.of(context)?.settings.arguments;
     if (args is Map<String, dynamic> && args.containsKey("_id")) {
       topicId = args["_id"];
+      isDiscover = args['isDiscover'];
       _loadTopics();
     } else {
       print('Invalid arguments. Cannot load topics.');
@@ -132,59 +135,108 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
   }
 
   Future<void> _showBottomSheet(BuildContext context) async {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) {
-        return Container(
-          height: 280,
-          width: double.infinity,
-          padding: EdgeInsets.all(8.0),
-          child: ListView(
-            children: <Widget>[
-              CustomListTile(
-                title: "Add to folder",
-                icon: Icons.add_box_outlined,
-                onTap: () {
-                  Navigator.pop(context);
-                },
+    if(!isDiscover)
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (context) {
+          return Container(
+            height: 280,
+            width: double.infinity,
+            padding: EdgeInsets.all(8.0),
+            child: ListView(
+              children: <Widget>[
+                CustomListTile(
+                  title: "Add to folder",
+                  icon: Icons.add_box_outlined,
+                  onTap: () async {
+                    Navigator.pop(context);
+                    await Navigator.pushNamed(context, AddToFolder.routeName);
+                  },
+                ),
+                Divider(),
+                CustomListTile(
+                  title: "Edit set",
+                  icon: Icons.edit,
+                  onTap: () {
+                    handleEditTopic(context, topicId, title, description,
+                        topics['vocabularies']);
+                  },
+                ),
+                Divider(),
+                CustomListTile(
+                  title: "Delete set",
+                  icon: Icons.delete,
+                  onTap: () {
+                    handleDeleteTopic(context, token, topicId);
+                  },
+                ),
+                Divider(),
+                ListTile(
+                  title: Center(
+                      child: Text(
+                    'Cancel',
+                    style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey[600]),
+                  )),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    if(isDiscover)
+      showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          builder: (context) {
+            return Container(
+              height: 200,
+              width: double.infinity,
+              padding: EdgeInsets.all(8.0),
+              child: ListView(
+                children: <Widget>[
+                  CustomListTile(
+                    title: "Add to folder",
+                    icon: Icons.add_box_outlined,
+                    onTap: () async {
+                      Navigator.pop(context);
+                      await Navigator.pushNamed(context, AddToFolder.routeName);
+                    },
+                  ),
+                  Divider(),
+                  CustomListTile(
+                    title: "Save and edit",
+                    icon: Icons.edit,
+                    onTap: () {
+                      handleEditTopic(context, topicId, title, description,
+                          topics['vocabularies']);
+                    },
+                  ),
+                  Divider(),
+                  ListTile(
+                    title: Center(
+                        child: Text(
+                      'Cancel',
+                      style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey[600]),
+                    )),
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
               ),
-              Divider(),
-              CustomListTile(
-                title: "Edit set",
-                icon: Icons.edit,
-                onTap: () {
-                  handleEditTopic(context, topicId, title, description,
-                      topics['vocabularies']);
-                },
-              ),
-              Divider(),
-              CustomListTile(
-                title: "Delete set",
-                icon: Icons.delete,
-                onTap: () {
-                  handleDeleteTopic(context, token, topicId);
-                },
-              ),
-              Divider(),
-              ListTile(
-                title: Center(
-                    child: Text(
-                  'Cancel',
-                  style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey[600]),
-                )),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          ),
+            );
+          },
         );
-      },
-    );
   }
 
   void handleEditTopic(BuildContext context, String topicId, String title,

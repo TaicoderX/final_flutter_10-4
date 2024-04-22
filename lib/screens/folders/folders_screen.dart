@@ -219,7 +219,9 @@ class _FolderScreenState extends State<FolderScreen> {
     );
   }
 
-  Future<void> _showBottomSheet(BuildContext context, String folderId, String title, {String? description}) async {
+  Future<void> _showBottomSheet(
+      BuildContext context, String folderId, String title,
+      {String? description}) async {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -248,7 +250,9 @@ class _FolderScreenState extends State<FolderScreen> {
                 title: "Add sets",
                 icon: Icons.add_to_photos,
                 onTap: () {
-                  // handleDeleteTopic(context, token, topicId);
+                  Navigator.pop(context);
+                  // await 
+                  // AddTopicToFolder
                 },
               ),
               Divider(),

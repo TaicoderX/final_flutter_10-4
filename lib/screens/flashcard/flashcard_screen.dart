@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:shop_app/screens/flashcard/components/congrats_screen.dart';
 
-import 'components/show_bottom_sheet.dart';
-
 class FlashcardsView extends StatefulWidget {
   static String routeName = '/flashcards';
 
@@ -24,33 +22,34 @@ class _FlashcardsViewState extends State<FlashcardsView> {
   FlipCardController controllerFlipCard = FlipCardController();
   List<dynamic> flashcards = [];
   String topicId = "";
+
   String selectedFont = 'Term';
   bool shuffle = false;
   bool playAudio = false;
 
-  void updateSettings(bool newShuffle, bool newPlayAudio, String newSelectedFont) {
-    setState(() {
-      shuffle = newShuffle;
-      playAudio = newPlayAudio;
-      selectedFont = newSelectedFont;
-      if(shuffle) {
-        flashcards.shuffle();
-      }
-      if(selectedFont == 'Term') {
-        flashcards.forEach((element) {
-          final temp = element['englishWord'];
-          element['englishWord'] = element['vietnameseWord'];
-          element['vietnameseWord'] = temp;
-        });
-      } else {
-        flashcards.forEach((element) {
-          final temp = element['englishWord'];
-          element['englishWord'] = element['vietnameseWord'];
-          element['vietnameseWord'] = temp;
-        });
-      }
-    });
-  }
+  // void updateSettings(bool newShuffle, bool newPlayAudio, String newSelectedFont) {
+  //   setState(() {
+  //     shuffle = newShuffle;
+  //     playAudio = newPlayAudio;
+  //     selectedFont = newSelectedFont;
+  //     if(shuffle) {
+  //       flashcards.shuffle();
+  //     }
+  //     if(selectedFont == 'Term') {
+  //       flashcards.forEach((element) {
+  //         final temp = element['englishWord'];
+  //         element['englishWord'] = element['vietnameseWord'];
+  //         element['vietnameseWord'] = temp;
+  //       });
+  //     } else {
+  //       flashcards.forEach((element) {
+  //         final temp = element['englishWord'];
+  //         element['englishWord'] = element['vietnameseWord'];
+  //         element['vietnameseWord'] = temp;
+  //       });
+  //     }
+  //   });
+  // }
 
   @override
   void initState() {
@@ -170,7 +169,7 @@ class _FlashcardsViewState extends State<FlashcardsView> {
                 color: Colors.grey[700],
               ),
               onPressed: () {
-                showCustomModalBottomSheet(context, updateSettings);
+                bottomSheet();
               }),
           SizedBox(
             width: 10,
@@ -340,6 +339,101 @@ class _FlashcardsViewState extends State<FlashcardsView> {
           ),
         ],
       ),
+    );
+  }
+
+  Future bottomSheet() {
+    return showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Container(
+              padding: EdgeInsets.only(
+                  top: 24.0, left: 16.0, right: 16.0, bottom: 16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    'Options',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24.0,
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  SwitchListTile(
+                    title: Text('Shuffle'),
+                    value: shuffle,
+                    onChanged: (bool value) {
+                      setState(() {
+                        shuffle = value;
+                      });
+                    },
+                    secondary: Icon(Icons.shuffle),
+                  ),
+                  SwitchListTile(
+                    title: Text('Play audio'),
+                    value: playAudio,
+                    onChanged: (bool value) {
+                      setState(() {
+                        playAudio = value;
+                      });
+                    },
+                    secondary: Icon(Icons.audiotrack),
+                  ),
+                  SizedBox(height: 20),
+                  Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Icon(Icons.font_download_rounded),
+                        Text(
+                          'Font: ',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        DropdownButton<String>(
+                          value: selectedFont,
+                          onChanged: (String? newValue) {
+                            // Update the selectedFont when dropdown value changes
+                            if (newValue != null) {
+                              setState(() {
+                                selectedFont = newValue;
+                              });
+                            }
+                          },
+                          items: <String>['Term', 'Definition']
+                              .map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    child: Text('Restart Flashcards'),
+                    onPressed: () {
+                      setState(() {
+                        shuffle = false;
+                        playAudio = false;
+                        selectedFont = 'Term';
+                      });
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

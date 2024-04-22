@@ -105,24 +105,7 @@ class _BodyState extends State<Body> {
                 itemCount: filtered.length,
                 itemBuilder: (context, index) {
                   var topic = filtered[index];
-
-                  // return TopicInFolder(
-                  //   image: topic['ownerId']['profileImage'] ?? "",
-                  //   title: topic['topicNameEnglish'] ?? 'Title',
-                  //   words: topic['vocabularyCount'] ?? 0,
-                  //   name: topic['ownerId']['username'] ?? 'Name',
-                  //   press: () {
-                  //     Navigator.pushNamed(context, FlipCardScreen.routeName,
-                  //         arguments: {
-                  //           "_id": topic["_id"],
-                  //           "title": topic["topicNameEnglish"],
-                  //           'image': topic['ownerId']['profileImage'] ?? '',
-                  //           'username': topic['ownerId']['username'] ?? '',
-                  //           'terms': topic['vocabularyCount'].toString(),
-                  //         });
-                  //   },
-                  // );
-                  return TopicWidgetFactory.createWidget(topic, context, false);
+                  return TopicWidgetFactory.createWidget(topic, context, false, isDiscover: true);
                 },
               ),
             ],

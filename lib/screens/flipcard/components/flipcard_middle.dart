@@ -64,7 +64,6 @@ class Middle extends StatelessWidget {
               },
             ),
             buildListTile(Icons.check_circle, 'Test', const Color(0xFF3F56FF)),
-            buildListTile(Icons.layers, 'Match', const Color(0xFF3F56FF)),
           ],
         ),
       ],

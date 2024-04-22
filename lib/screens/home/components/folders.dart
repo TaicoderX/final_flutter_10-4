@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/controllers/folder.dart';
 import 'package:shop_app/screens/folders/components/folder_factory.dart';
-import 'package:shop_app/screens/folders/folders_screen.dart';
-import 'package:shop_app/screens/home/components/special_folders.dart';
+
 import 'package:shop_app/screens/local/local_storage.dart';
 
 import 'section_title.dart';
@@ -99,26 +98,6 @@ class _PopularProductsState extends State<Folders> {
           child: Row(
             children: List.generate(
               filteredFolders.length,
-              // (index) => SpecialFolder(
-              //   image: image,
-              //   title: filteredFolders[index]["folderNameEnglish"] ?? '',
-              //   words: filteredFolders[index]["topicCount"] ?? 0,
-              //   name: name,
-              //   sets: filteredFolders[index]["topicCount"] ?? 0,
-              //   press: () {
-              //     Navigator.pushNamed(
-              //       context,
-              //       FolderScreen.routeName,
-              //       arguments: {
-              //         'folderID': filteredFolders[index]["_id"],
-              //         'title': filteredFolders[index]["folderNameEnglish"],
-              //         'username': name,
-              //         'image': "$image",
-              //         'sets': filteredFolders[index]["topicCount"]
-              //       },
-              //     );
-              //   },
-              // ),
               (index) => SpecialFolderFactory.createList(filteredFolders[index], context, image,name, false),
             ),
           ),
