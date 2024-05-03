@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shop_app/controllers/bookmarkVocab.dart';
 
 class CreateTerm extends StatefulWidget {
-  const CreateTerm(this.text);
+  const CreateTerm(this.text, this.isFavorite, this.vocabularyId,
+      {Key? key, this.onFavoriteChanged})
+      : super(key: key);
 
   final String text;
+  final bool isFavorite;
+  final String vocabularyId;
+  final ValueChanged<bool>? onFavoriteChanged;
 
   @override
   State<CreateTerm> createState() => _CreateTermState();
@@ -12,24 +19,53 @@ class CreateTerm extends StatefulWidget {
 
 class _CreateTermState extends State<CreateTerm> {
   late FlutterTts flutterTts;
-  bool isFavorite = false;
+  bool isFavorite = true;
   bool isVolumeOn = false;
 
   @override
   void initState() {
     super.initState();
+    isFavorite = widget.isFavorite;
     flutterTts = FlutterTts();
   }
 
   Future<void> _speak(String text) async {
-    await flutterTts.setLanguage("en-US");
-    await flutterTts.awaitSpeakCompletion(true);
-    await flutterTts.speak(text).then((_) {
-      if (mounted) {
-        setState(() {
-          isVolumeOn = false;
-        });
+    try {
+      await flutterTts.setLanguage("en-US");
+      await flutterTts.awaitSpeakCompletion(true);
+      await flutterTts.speak(text).then((_) {
+        if (mounted) {
+          setState(() {
+            isVolumeOn = false;
+          });
+        }
+      });
+    } catch (e) {
+      // Handle exceptions
+      print("Error occurred in TTS: $e");
+    }
+  }
+
+  void _toggleFavoriteStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token') ?? '';
+    if (isFavorite) {
+      try {
+        await deleteBMVocab(token, widget.vocabularyId);
+      } catch (e) {
+        print("Error removing bookmark: $e");
       }
+    } else {
+      try {
+        await createBMVocab(token, [
+          {'_id': widget.vocabularyId}
+        ]);
+      } catch (e) {
+        print("Error adding bookmark: $e");
+      }
+    }
+    setState(() {
+      isFavorite = !isFavorite;
     });
   }
 
@@ -76,11 +112,7 @@ class _CreateTermState extends State<CreateTerm> {
             top: 15,
             right: 15,
             child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  isFavorite = !isFavorite; // Toggle the favorite icon state
-                });
-              },
+              onTap: _toggleFavoriteStatus,
               child: Icon(
                 isFavorite ? Icons.star : Icons.star_border,
                 color: Colors.grey,
@@ -94,11 +126,11 @@ class _CreateTermState extends State<CreateTerm> {
             child: GestureDetector(
               onTap: () {
                 setState(() {
-                  isVolumeOn = !isVolumeOn; // Toggle the volume icon state
+                  isVolumeOn = !isVolumeOn;
                   if (isVolumeOn) {
-                    _speak(widget.text); // Speak when the volume is on
+                    _speak(widget.text);
                   } else {
-                    flutterTts.stop(); // Stop speaking when the volume is off
+                    flutterTts.stop();
                   }
                 });
               },

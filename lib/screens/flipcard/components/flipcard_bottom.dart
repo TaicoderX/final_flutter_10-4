@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shop_app/controllers/bookmarkVocab.dart';
 import 'package:shop_app/screens/flipcard/components/buildTerm.dart';
 
 class Bottom extends StatefulWidget {
   final int currentPage;
   final List<dynamic> vocabularies;
+  final String topicId;
 
   const Bottom({
     Key? key,
     required this.vocabularies,
     required this.currentPage,
+    required this.topicId,
   }) : super(key: key);
 
   @override
@@ -17,7 +21,9 @@ class Bottom extends StatefulWidget {
 
 class _BottomState extends State<Bottom> {
   String _currentSort = 'Original';
+  bool _loading = true;
   List<dynamic> _sortedVocabularies = [];
+  List<dynamic> _bookmarkedVocabularies = [];
 
   @override
   void didUpdateWidget(Bottom oldWidget) {
@@ -36,7 +42,31 @@ class _BottomState extends State<Bottom> {
   @override
   void initState() {
     super.initState();
+    _initData();
+  }
+
+  Future<void> _initData() async {
+    setState(() {
+      _loading = true;
+    });
+    await getBookmarkVocabulary();
     _updateSortedVocabularies();
+    setState(() {
+      _loading = false;
+    });
+  }
+
+  Future<void> getBookmarkVocabulary() async {
+    final prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token') ?? '';
+    try {
+      var res = await getBMByTopicId(token, widget.topicId);
+      setState(() {
+        _bookmarkedVocabularies = res['bookmarkedVocabIds'];
+      });
+    } catch (error) {
+      print("Failed to load bookmarks: $error");
+    }
   }
 
   @override
@@ -82,14 +112,23 @@ class _BottomState extends State<Bottom> {
             )
           ],
         ),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: _sortedVocabularies.length,
-          itemBuilder: (context, index) {
-            return CreateTerm(_sortedVocabularies[index]["englishWord"]);
-          },
-        ),
+        if (_loading)
+          const CircularProgressIndicator()
+        else
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: _sortedVocabularies.length,
+            itemBuilder: (context, index) {
+              String vocabId = _sortedVocabularies[index]['_id'];
+              bool isFavorite = _bookmarkedVocabularies.contains(vocabId);
+              return CreateTerm(
+                _sortedVocabularies[index]['englishWord'],
+                isFavorite,
+                vocabId,
+              );
+            },
+          ),
         const SizedBox(height: 20),
       ],
     );

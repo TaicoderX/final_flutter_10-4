@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/controllers/user.controller.dart';
 import 'package:shop_app/screens/folders/components/topic_factory.dart';
 import 'package:shop_app/screens/home/components/new_user.dart';
-import 'package:shop_app/screens/local/local_storage.dart';
 
 import 'section_title.dart';
 
@@ -14,18 +13,18 @@ class Topics extends StatefulWidget {
   const Topics({Key? key, required this.searchQuery}) : super(key: key);
 
   @override
-  _SpecialOffersState createState() => _SpecialOffersState();
+  _TopicsState createState() => _TopicsState();
 }
 
-class _SpecialOffersState extends State<Topics> {
+class _TopicsState extends State<Topics> {
   List<dynamic> topics = [];
   List<dynamic> filteredTopics = [];
-  Map<String, dynamic> userInfo = {};
+  bool _loading = true;
 
   @override
   void initState() {
-    loadTopics();
     super.initState();
+    loadTopics();
   }
 
   @override
@@ -38,7 +37,6 @@ class _SpecialOffersState extends State<Topics> {
 
   void searchTopic(String query) {
     final String searchQueryLowercase = query.toLowerCase().trim();
-    filteredTopics = topics;
     if (searchQueryLowercase.isEmpty) {
       setState(() {
         filteredTopics = topics;
@@ -46,8 +44,7 @@ class _SpecialOffersState extends State<Topics> {
     } else {
       setState(() {
         filteredTopics = topics.where((topic) {
-          final String topicNameLowercase =
-              topic["topicNameEnglish"].toLowerCase();
+          final String topicNameLowercase = topic["topicNameEnglish"].toLowerCase();
           return topicNameLowercase.contains(searchQueryLowercase);
         }).toList();
       });
@@ -60,6 +57,9 @@ class _SpecialOffersState extends State<Topics> {
 
     if (token.isEmpty) {
       print('Token is empty. Cannot load topics.');
+      setState(() {
+        _loading = false;
+      });
       return;
     }
 
@@ -68,15 +68,22 @@ class _SpecialOffersState extends State<Topics> {
       setState(() {
         topics = data['topics'] ?? [];
         filteredTopics = topics;
-        LocalStorageService().saveData('topics', topics);
+        _loading = false; // Indicate loading complete here
       });
     } catch (e) {
       print('Exception occurred while loading topics: $e');
+      setState(() {
+        _loading = false; // Ensure loading complete in case of error
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_loading) {
+      return Center(child: CircularProgressIndicator());
+    }
+
     if (filteredTopics.isEmpty) {
       return NewUser();
     }
@@ -92,8 +99,7 @@ class _SpecialOffersState extends State<Topics> {
           child: Row(
             children: List.generate(
               filteredTopics.length,
-              (index) => TopicWidgetFactory.createWidget(
-                      filteredTopics[index], context, false)
+              (index) => TopicWidgetFactory.createWidget(filteredTopics[index], context, false)
             ),
           ),
         ),

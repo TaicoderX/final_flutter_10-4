@@ -42,8 +42,9 @@ String deleteTopicInFolder = folder + ":id/topics/:topicId";
 String bookmarkVocab = baseUrl + "/bookmarkVocabularies";
 
 String createBookmarkVocabUrl = bookmarkVocab;
-String getAllBookmarkVocabByUser = bookmarkVocab + "/vocabularies/";
-String deleteBookmarkVocabUrl = bookmarkVocab + "/";
+String getAllBookmarkVocabByUser = bookmarkVocab;
+String getBookmarkVocabByTopic = bookmarkVocab + "/topics/";
+String deleteBookmarkVocabUrl = bookmarkVocab + "/vocabularies/";
 
 // learning statistic
 String learningStatistic = baseUrl + "/learningStatistics";

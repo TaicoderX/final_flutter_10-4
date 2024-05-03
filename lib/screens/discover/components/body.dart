@@ -17,6 +17,13 @@ class _BodyState extends State<Body> {
   List<dynamic> publicTopics = [];
   List<dynamic> filtered = [];
   String _currentSort = 'Original';
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    loadPublicTopicDetails();
+  }
 
   @override
   void didUpdateWidget(covariant Body oldWidget) {
@@ -26,24 +33,16 @@ class _BodyState extends State<Body> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    loadPublicTopicDetails();
-  }
-
   void searchTopic(String query) {
     final String searchQueryLowercase = query.toLowerCase().trim();
-    filtered = publicTopics;
     if (searchQueryLowercase.isEmpty) {
       setState(() {
         filtered = publicTopics;
       });
     } else {
       setState(() {
-        filtered = filtered.where((topic) {
-          final String topicNameLowercase =
-              topic["topicNameEnglish"].toLowerCase();
+        filtered = publicTopics.where((topic) {
+          final String topicNameLowercase = topic["topicNameEnglish"].toLowerCase();
           return topicNameLowercase.contains(searchQueryLowercase);
         }).toList();
       });
@@ -55,22 +54,29 @@ class _BodyState extends State<Body> {
     String token = prefs.getString('token') ?? '';
 
     try {
-      Map<String, dynamic> data = await getPublicTopic(token);
-      List<dynamic> topics = data['topics'];
+      var data = await getPublicTopic(token);
       setState(() {
-        publicTopics = topics;
-        filtered = topics;
+        publicTopics = data['topics'] ?? [];
+        filtered = publicTopics;
+        _loading = false; // Set loading to false after data is loaded
       });
     } catch (e) {
       print("Failed to load topic details: $e");
+      setState(() {
+        _loading = false; // Set loading to false if there's an error
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_loading) {
+      return Center(child: CircularProgressIndicator());
+    }
     if (filtered.isEmpty) {
       return NotFound();
     }
+
     return Container(
       color: Color(0xFFF6F7FB),
       child: SafeArea(
@@ -84,14 +90,13 @@ class _BodyState extends State<Body> {
                   Text(
                     _currentSort,
                     style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 85, 85, 85)),
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(255, 85, 85, 85)
+                    ),
                   ),
                   IconButton(
-                    icon: const Icon(
-                      Icons.sort,
-                    ),
+                    icon: const Icon(Icons.sort),
                     color: const Color(0xFF555555),
                     onPressed: () {
                       _showBottomSheet(context);
@@ -201,10 +206,8 @@ class _BodyState extends State<Body> {
   void _sortVocabularies(String sortType) {
     setState(() {
       if (sortType == 'Alphabetically') {
-        List<dynamic> sorted = List.from(filtered);
-        sorted.sort(
+        filtered.sort(
             (a, b) => a["topicNameEnglish"].compareTo(b["topicNameEnglish"]));
-        filtered = sorted;
       } else if (sortType == 'Original') {
         filtered = List.from(publicTopics);
       }

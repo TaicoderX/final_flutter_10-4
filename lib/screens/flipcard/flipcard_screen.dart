@@ -109,7 +109,8 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
                 vocabularies: topics['vocabularies'] ?? []),
             Bottom(
                 currentPage: currentPage,
-                vocabularies: topics['vocabularies'] ?? []),
+                vocabularies: topics['vocabularies'] ?? [],
+                topicId: topicId),
           ],
         ),
       ),

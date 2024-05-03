@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:shop_app/screens/flashcard/flashcard_screen.dart';
 import 'package:shop_app/screens/quiz/quiz_page_screen.dart';
 
@@ -38,7 +39,6 @@ class Middle extends StatelessWidget {
                 fontSize: 15, color: Colors.grey, fontFamily: 'Roboto'),
           ),
         ),
-        const SizedBox(height: 10),
         ListView(
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
@@ -64,6 +64,7 @@ class Middle extends StatelessWidget {
               },
             ),
             buildListTile(Icons.check_circle, 'Test', const Color(0xFF3F56FF)),
+            buildListTile(Icons.abc, 'Ranking', const Color(0xFF3F56FF)),
           ],
         ),
       ],
