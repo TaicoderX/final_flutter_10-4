@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/controllers/user.controller.dart';
 import 'package:shop_app/screens/folders/components/topic_factory.dart';
+import 'package:shop_app/screens/library/components/topic_empty.dart';
 import 'package:shop_app/screens/local/local_storage.dart';
 
 class StudySets extends StatefulWidget {
@@ -42,8 +43,8 @@ class _StudySetsState extends State<StudySets> {
       setState(() {
         topics = data['topics'] ?? [];
         filteredTopics = topics;
-        LocalStorageService().saveData('topics', topics);
       });
+      LocalStorageService().saveData('topics', topics);
     } catch (e) {
       print('Exception occurred while loading topics: $e');
     }
@@ -51,6 +52,10 @@ class _StudySetsState extends State<StudySets> {
 
   @override
   Widget build(BuildContext context) {
+    if (filteredTopics.isEmpty) {
+      return TopicEmptyScreen();
+    }
+
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Column(

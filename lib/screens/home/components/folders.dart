@@ -70,8 +70,8 @@ class _PopularProductsState extends State<Folders> {
       setState(() {
         folders = res['folders'] ?? [];
         filteredFolders = folders;
-        LocalStorageService().saveData('folders', folders);
       });
+      LocalStorageService().saveData('folders', folders);
     } catch (e) {
       print('Exception occurred while loading topics: $e');
     }

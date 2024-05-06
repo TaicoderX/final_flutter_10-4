@@ -44,8 +44,8 @@ class _SpecialOffersState extends State<AddTopicToFolder> {
       setState(() {
         topics = data['topics'] ?? [];
         filteredTopics = topics;
-        LocalStorageService().saveData('topics', topics);
       });
+      LocalStorageService().saveData('topics', topics);
     } catch (e) {
       print('Exception occurred while loading topics: $e');
     }

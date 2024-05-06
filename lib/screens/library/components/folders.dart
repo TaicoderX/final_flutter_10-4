@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/controllers/folder.dart';
 import 'package:shop_app/screens/folders/components/folder_factory.dart';
+import 'package:shop_app/screens/library/components/folder_empty.dart';
 import 'package:shop_app/screens/local/local_storage.dart';
 
 class Folders extends StatefulWidget {
@@ -43,8 +44,8 @@ class _FoldersState extends State<Folders> {
       setState(() {
         folders = res['folders'] ?? [];
         filteredFolders = folders;
-        LocalStorageService().saveData('folders', folders);
       });
+      LocalStorageService().saveData('folders', folders);
     } catch (e) {
       print('Exception occurred while loading topics: $e');
     }
@@ -52,6 +53,10 @@ class _FoldersState extends State<Folders> {
 
   @override
   Widget build(BuildContext context) {
+    if (folders.isEmpty) {
+      return FolderEmptyScreen();
+    }
+
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Column(
@@ -66,7 +71,12 @@ class _FoldersState extends State<Folders> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: List.generate(
                 folders.length,
-                (index) => SpecialFolderFactory.createList(folders[index], context, userInfo['profileImage'], userInfo["username"], true),
+                (index) => SpecialFolderFactory.createList(
+                    folders[index],
+                    context,
+                    userInfo['profileImage'],
+                    userInfo["username"],
+                    true),
               ),
             ),
           ),

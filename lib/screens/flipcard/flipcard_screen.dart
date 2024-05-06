@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/controllers/topic.dart';
 import 'package:shop_app/controllers/user.controller.dart';
 import 'package:shop_app/screens/add_folder/add_folder_to_topic.dart';
+import 'package:shop_app/screens/flipcard/components/clone_topic.dart';
 import 'package:shop_app/screens/flipcard/components/custom_listtile.dart';
 import 'package:shop_app/screens/flipcard/components/edit_topic.dart';
 import 'package:shop_app/screens/init_screen.dart';
@@ -40,7 +41,7 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
     final args = ModalRoute.of(context)?.settings.arguments;
     if (args is Map<String, dynamic> && args.containsKey("_id")) {
       topicId = args["_id"];
-      isDiscover = args['isDiscover'];
+      isDiscover = args['isDiscover'] ?? false;
       _loadTopics();
     } else {
       print('Invalid arguments. Cannot load topics.');
@@ -54,8 +55,12 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
       return;
     }
     try {
-      await getVocabularyByTopicId(topicId, token)
-          .then((value) => _updateTopics(value));
+      final value = await getVocabularyByTopicId(topicId, token);
+      if (value != null) {
+        _updateTopics(value);
+      } else {
+        print('API returned null value.');
+      }
     } catch (e) {
       print('Exception occurred while loading topics: $e');
     }
@@ -88,9 +93,11 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
 
   Widget _buildBody() {
     final args =
-        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-    title = args['title'] ?? '';
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ??
+            {};
+    title = args['title'] ?? 'Default Title';
     description = args['description'] ?? '';
+
     return SafeArea(
       child: Container(
         color: const Color(0xFFF6F7FB),
@@ -136,7 +143,7 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
   }
 
   Future<void> _showBottomSheet(BuildContext context) async {
-    if(!isDiscover)
+    if (!isDiscover)
       showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -191,53 +198,56 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
           );
         },
       );
-    if(isDiscover)
+    if (isDiscover)
       showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          builder: (context) {
-            return Container(
-              height: 200,
-              width: double.infinity,
-              padding: EdgeInsets.all(8.0),
-              child: ListView(
-                children: <Widget>[
-                  CustomListTile(
-                    title: "Add to folder",
-                    icon: Icons.add_box_outlined,
-                    onTap: () async {
-                      Navigator.pop(context);
-                      await Navigator.pushNamed(context, AddToFolder.routeName);
-                    },
-                  ),
-                  Divider(),
-                  CustomListTile(
-                    title: "Save and edit",
-                    icon: Icons.edit,
-                    onTap: () {
-                      handleEditTopic(context, topicId, title, description,
-                          topics['vocabularies']);
-                    },
-                  ),
-                  Divider(),
-                  ListTile(
-                    title: Center(
-                        child: Text(
-                      'Cancel',
-                      style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey[600]),
-                    )),
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                ],
-              ),
-            );
-          },
-        );
+        context: context,
+        isScrollControlled: true,
+        builder: (context) {
+          return Container(
+            height: 200,
+            width: double.infinity,
+            padding: EdgeInsets.all(8.0),
+            child: ListView(
+              children: <Widget>[
+                CustomListTile(
+                  title: "Add to folder",
+                  icon: Icons.add_box_outlined,
+                  onTap: () async {
+                    Navigator.pop(context);
+                    await Navigator.pushNamed(context, AddToFolder.routeName);
+                  },
+                ),
+                Divider(),
+                CustomListTile(
+                  title: "Save and edit",
+                  icon: Icons.edit,
+                  onTap: () {
+                    isDiscover
+                        ? handleCloneTopic(context, topicId, title, description,
+                            topics['vocabularies'])
+                        : handleEditTopic(context, topicId, title, description,
+                            topics['vocabularies']);
+                  },
+                ),
+                Divider(),
+                ListTile(
+                  title: Center(
+                      child: Text(
+                    'Cancel',
+                    style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey[600]),
+                  )),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          );
+        },
+      );
   }
 
   void handleEditTopic(BuildContext context, String topicId, String title,
@@ -246,6 +256,21 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
     await Navigator.pushNamed(
       context,
       EditTopic.routeName,
+      arguments: {
+        'topicId': topicId,
+        'title': title,
+        'description': description,
+        'vocabularies': vocabularies,
+      },
+    );
+  }
+
+  void handleCloneTopic(BuildContext context, String topicId, String title,
+      String description, List<dynamic> vocabularies) async {
+    Navigator.pop(context);
+    await Navigator.pushNamed(
+      context,
+      CloneTopic.routeName,
       arguments: {
         'topicId': topicId,
         'title': title,

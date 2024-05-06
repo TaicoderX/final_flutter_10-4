@@ -6,6 +6,7 @@ import 'package:shop_app/screens/add_topic/add_topic_to_folder.dart';
 import 'package:shop_app/screens/discover/discover_screen.dart';
 import 'package:shop_app/screens/flashcard/components/congrats_screen.dart';
 import 'package:shop_app/screens/flashcard/flashcard_screen.dart';
+import 'package:shop_app/screens/flipcard/components/clone_topic.dart';
 import 'package:shop_app/screens/flipcard/components/edit_topic.dart';
 import 'package:shop_app/screens/flipcard/flipcard_screen.dart';
 import 'package:shop_app/screens/folders/components/edit_folder.dart';
@@ -48,6 +49,7 @@ final Map<String, WidgetBuilder> routes = {
   StudySetScreen.routeName:(context) => StudySetScreen(),
   NewFolderScreen.routeName:(context) => NewFolderScreen(),
   EditTopic.routeName:(context) => EditTopic(),
+  CloneTopic.routeName:(context) => CloneTopic(),
   EditFolder.routeName:(context) => EditFolder(),
   FlashcardsView.routeName:(context) => FlashcardsView(),
   CongratsScreen.routeName:(context) => CongratsScreen(),

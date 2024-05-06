@@ -20,7 +20,7 @@ class HomeHeader extends StatelessWidget {
           Container(
             width: double.infinity,
             height: 200,
-            color: const Color(0xFF465BB4), // Màu của container trên cùng
+            color: const Color(0xFF465BB4),
             child: Stack(
               children: [
                 const Positioned(

@@ -58,12 +58,12 @@ class _BodyState extends State<Body> {
       setState(() {
         publicTopics = data['topics'] ?? [];
         filtered = publicTopics;
-        _loading = false; // Set loading to false after data is loaded
+        _loading = false;
       });
     } catch (e) {
       print("Failed to load topic details: $e");
       setState(() {
-        _loading = false; // Set loading to false if there's an error
+        _loading = false;
       });
     }
   }

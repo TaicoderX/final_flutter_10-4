@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/controllers/user.controller.dart';
 import 'package:shop_app/screens/folders/components/topic_factory.dart';
 import 'package:shop_app/screens/home/components/new_user.dart';
+import 'package:shop_app/screens/local/local_storage.dart';
 
 import 'section_title.dart';
 
@@ -68,12 +69,13 @@ class _TopicsState extends State<Topics> {
       setState(() {
         topics = data['topics'] ?? [];
         filteredTopics = topics;
-        _loading = false; // Indicate loading complete here
+        _loading = false;
       });
+      await LocalStorageService().saveData('topics', topics);
     } catch (e) {
       print('Exception occurred while loading topics: $e');
       setState(() {
-        _loading = false; // Ensure loading complete in case of error
+        _loading = false;
       });
     }
   }

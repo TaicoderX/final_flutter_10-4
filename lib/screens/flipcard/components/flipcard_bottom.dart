@@ -113,7 +113,7 @@ class _BottomState extends State<Bottom> {
           ],
         ),
         if (_loading)
-          const CircularProgressIndicator()
+          const Center(child: CircularProgressIndicator())
         else
           ListView.builder(
             shrinkWrap: true,

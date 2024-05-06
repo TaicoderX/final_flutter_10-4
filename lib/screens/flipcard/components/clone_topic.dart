@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:quickalert/models/quickalert_type.dart';
-import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/controllers/topic.dart';
 import 'package:shop_app/models/VocabularyItem.dart';
 import 'package:shop_app/screens/flipcard/flipcard_screen.dart';
 
-class EditTopic extends StatefulWidget {
-  static String routeName = "/edit-topic";
+class CloneTopic extends StatefulWidget {
+  static String routeName = "/clone-topic";
 
   @override
   _StudySetScreenState createState() => _StudySetScreenState();
 }
 
-class _StudySetScreenState extends State<EditTopic> {
+class _StudySetScreenState extends State<CloneTopic> {
   TextEditingController subjectController = TextEditingController();
   TextEditingController? descriptionController;
   List<TextEditingController> termControllers = [];
@@ -32,7 +30,6 @@ class _StudySetScreenState extends State<EditTopic> {
   String originalSubject = '';
   String? originalDescription;
   List<VocabularyItem> originalVocabularyItems = [];
-  String _topicId = '';
 
   @override
   void didChangeDependencies() {
@@ -40,7 +37,6 @@ class _StudySetScreenState extends State<EditTopic> {
     if (!_isDataLoaded) {
       final arguments =
           ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-      _topicId = arguments?['topicId'] ?? '';
       subjectController.text = arguments?['title'] ?? '';
       originalSubject = subjectController.text;
       descriptionController?.text = arguments?['description'] ?? '';
@@ -92,102 +88,38 @@ class _StudySetScreenState extends State<EditTopic> {
     getToken();
   }
 
-  void onSavePressed() async {
-    List<Future<dynamic>> operations = [];
-    Map<String, dynamic> updated = {};
-
-    bool titleOrDescriptionChanged =
-        subjectController.text != originalSubject ||
-            descriptionController?.text != originalDescription;
-
-    QuickAlert.show(
-      context: context,
-      type: QuickAlertType.loading,
-      title: 'Loading',
-      text: 'Updating set...',
-    );
-
-    if (titleOrDescriptionChanged) {
-      operations.add(updateTopic(
-        _token,
-        _topicId,
-        subjectController.text,
-        descriptionController?.text ?? '',
-      ));
-    }
-
-    vocabularyItems.forEach((item) {
-      if (item.id == null) {
-        if (item.termController.text.isNotEmpty &&
-            item.definitionController.text.isNotEmpty) {
-          operations.add(createVocabToTopic(
-            _token,
-            _topicId,
-            item.termController.text,
-            item.definitionController.text,
-          ));
-        }
-      } else if (item.termController.text.isEmpty &&
-          item.definitionController.text.isEmpty) {
-        operations.add(deleteVocabInTopic(_token, _topicId, item.id!));
-      } else if (item.termController.text != item.originalTerm ||
-          item.definitionController.text != item.originalDefinition) {
-        operations.add(updateVocabInTopic(
-          _token,
-          _topicId,
-          item.id!,
-          item.termController.text,
-          item.definitionController.text,
-        ));
-      }
-    });
+  void onClonePressed() async {
+    String newTopicTitle = subjectController.text;
+    String newTopicDescription = descriptionController?.text ?? '';
+    List<Map<String, String>> vocabularyList = vocabularyItems
+        .where((item) =>
+            item.termController.text.isNotEmpty &&
+            item.definitionController.text.isNotEmpty)
+        .map((item) => {
+              'englishWord': item.termController.text,
+              'vietnameseWord': item.definitionController.text,
+            })
+        .toList();
 
     try {
-      final results = await Future.wait(operations, eagerError: true);
-
-      await getTopicByID(_topicId, _token)
-        .then((value) => updated = value['topic']);
-      Navigator.pop(context);
-
-      bool hasError = false;
-
-      for (var result in results) {
-        if (result['error'] != null) {
-          QuickAlert.show(
-            context: context,
-            type: QuickAlertType.error,
-            text: result['error'],
-          );
-          hasError = true;
-          break;
-        }
-      }
-
-      if (!hasError) {
-        // ignore: use_build_context_synchronously
-        QuickAlert.show(
-          context: context,
-          type: QuickAlertType.success,
-          text: results.first['message'],
-          onConfirmBtnTap: () {
-            Navigator.pushNamedAndRemoveUntil(
-                context,
-                FlipCardScreen.routeName,
-                arguments: {
-                  "_id": updated["_id"],
-                  "title": updated["topicNameEnglish"],
-                  'image': updated['ownerId']['profileImage'] ?? '',
-                  'username': updated['ownerId']['username'] ?? '',
-                  'description': updated["descriptionEnglish"] ?? '',
-                  'terms': updated["vocabularyCount"].toString(),
-                  
-                },
-                (route) => false);
-          },
-        );
-      }
+      await createTopic(
+              newTopicTitle, newTopicDescription, vocabularyList, _token, false)
+          .then((value) async {
+        Map<String, dynamic> topic = value['topic'];
+        Map<String, dynamic> user = topic['ownerId'];
+        Navigator.pushNamed(context, FlipCardScreen.routeName,
+            arguments: {
+              "_id": topic["_id"],
+              "title": topic["topicNameEnglish"],
+              'image': user["profileImage"] ?? '',
+              'username': user["username"] ?? '',
+              'description': topic["descriptionEnglish"] ?? '',
+              'terms': topic["vocabularyCount"].toString(),
+            });
+      });
     } catch (e) {
       print('An error occurred: $e');
+      // Show error feedback
     }
   }
 
@@ -208,8 +140,8 @@ class _StudySetScreenState extends State<EditTopic> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.save_alt_rounded),
-            onPressed: onSavePressed,
+            icon: const Icon(Icons.done_rounded),
+            onPressed: onClonePressed,
           ),
           const SizedBox(width: 10),
         ],
