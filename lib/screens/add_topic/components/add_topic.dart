@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
 
-class TopicInFolder extends StatelessWidget {
-  const TopicInFolder({
+class TopicAdded extends StatelessWidget {
+  const TopicAdded({
     Key? key,
     required this.title,
     required this.image,
@@ -10,9 +10,11 @@ class TopicInFolder extends StatelessWidget {
     required this.press,
     required this.name,
     required this.isLarge,
+    required this.isSelected,
   });
 
   final bool isLarge;
+  final bool isSelected;
   final String title, image, name;
   final int words;
   final GestureTapCallback press;
@@ -36,7 +38,8 @@ class TopicInFolder extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
                 color: Colors.white,
                 border: Border.all(
-                  color: Colors.grey.withOpacity(0.2),
+                  color:
+                      isSelected ? Colors.yellow : Colors.grey.withOpacity(0.2),
                   width: 2,
                 ),
               ),
@@ -70,18 +73,14 @@ class TopicInFolder extends StatelessWidget {
                       ),
                     ],
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
+                  const SizedBox(height: 20),
                   Row(
                     children: [
                       CircleAvatar(
                         radius: 15,
                         backgroundImage: CachedNetworkImageProvider(image),
                       ),
-                      const SizedBox(
-                        width: 10,
-                      ),
+                      const SizedBox(width: 10),
                       Text(
                         name,
                         style: const TextStyle(
@@ -90,7 +89,7 @@ class TopicInFolder extends StatelessWidget {
                             fontSize: 15),
                       ),
                     ],
-                  )
+                  ),
                 ],
               ),
             ),

@@ -33,10 +33,10 @@ String getVocabByTopicId = vocab + "/topics/";
 String folder = baseUrl + "/folders";
 String getFolderByUser = folder + "/users/";
 String createFolderUrl = folder + "/";
-String addTopicToFolder = folder + ":id/topics/:topicId";
+String addTopicToFolderUrl = folder + "/:id/topics/:topicId";
 String editFolderUrl = folder + "/";
 String deleteFolderUrl = folder + "/";
-String deleteTopicInFolder = folder + ":id/topics/:topicId";
+String deleteTopicInFolderUrl = folder + "/:id/topics/:topicId";
 
 // bookmark Vocab
 String bookmarkVocab = baseUrl + "/bookmarkVocabularies";

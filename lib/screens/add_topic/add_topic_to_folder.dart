@@ -1,7 +1,8 @@
 import 'package:dynamic_multi_step_form/dynamic_json_form.dart';
 import 'package:flutter/material.dart';
+import 'package:shop_app/controllers/folder.dart';
 import 'package:shop_app/controllers/user.controller.dart';
-import 'package:shop_app/screens/folders/components/topic_factory.dart';
+import 'package:shop_app/screens/add_topic/components/topic.dart';
 import 'package:shop_app/screens/local/local_storage.dart';
 
 class AddTopicToFolder extends StatefulWidget {
@@ -9,13 +10,15 @@ class AddTopicToFolder extends StatefulWidget {
   const AddTopicToFolder({Key? key}) : super(key: key);
 
   @override
-  _SpecialOffersState createState() => _SpecialOffersState();
+  _AddTopicToFolderState createState() => _AddTopicToFolderState();
 }
 
-class _SpecialOffersState extends State<AddTopicToFolder> {
+class _AddTopicToFolderState extends State<AddTopicToFolder> {
   List<dynamic> topics = [];
   List<dynamic> filteredTopics = [];
   Map<String, dynamic> userInfo = {};
+  String folderId = '';
+  String token = '';
 
   @override
   void initState() {
@@ -24,16 +27,7 @@ class _SpecialOffersState extends State<AddTopicToFolder> {
   }
 
   Future<void> loadTopics() async {
-    var storedTopics = await LocalStorageService().getData('topics');
-    if (storedTopics != null) {
-      setState(() {
-        topics = storedTopics;
-        filteredTopics = topics;
-      });
-      return;
-    }
-
-    final token = await LocalStorageService().getData('token');
+    token = await LocalStorageService().getData('token');
     if (token.isEmpty) {
       print('Token is empty. Cannot load topics.');
       return;
@@ -41,9 +35,16 @@ class _SpecialOffersState extends State<AddTopicToFolder> {
 
     try {
       var data = await getTopicByUserAPI(token);
+      final args = ModalRoute.of(context)?.settings.arguments as Map;
       setState(() {
         topics = data['topics'] ?? [];
         filteredTopics = topics;
+
+        List<dynamic> dynamicList = args['existingTopics'];
+        folderId = args['folderId'];
+        List<String> alreadyInFolder =
+            dynamicList.map((item) => item.toString()).toList();
+        AddTopicWidgetFactory.alreadyInFolder = alreadyInFolder;
       });
       LocalStorageService().saveData('topics', topics);
     } catch (e) {
@@ -51,19 +52,68 @@ class _SpecialOffersState extends State<AddTopicToFolder> {
     }
   }
 
+  void refreshUI() {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: Icon(Icons.arrow_back_ios),
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            size: 30,
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          'All Topics',
+          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+        actions: (AddTopicWidgetFactory.newlySelectedTopics.isNotEmpty ||
+                AddTopicWidgetFactory.deselectedTopics.isNotEmpty)
+            ? [
+                IconButton(
+                    icon: Icon(
+                      Icons.done_rounded,
+                      size: 30,
+                    ),
+                    onPressed: () async {
+                      // Process the selected and deselected topics
+                      var selectedTopics =
+                          AddTopicWidgetFactory.newlySelectedTopics;
+                      var removedTopics =
+                          AddTopicWidgetFactory.deselectedTopics;
+
+                      // TODO: Add API calls to add topics to the folder
+                      // Example: await addTopicsToFolderAPI(selectedTopics);
+                      for (var topic in selectedTopics) {
+                        await addTopicToFolder(token, topic, folderId);
+                      }
+                      // TODO: Add API calls to remove topics from the folder
+                      // Example: await removeTopicsFromFolderAPI(removedTopics);
+                      for (var topic in removedTopics) {
+                        await removeTopicFromFolder(token, topic, folderId);
+                      }
+                      // Reset the selection arrays after processing
+                      AddTopicWidgetFactory.newlySelectedTopics = [];
+                      AddTopicWidgetFactory.deselectedTopics = [];
+                      refreshUI();
+                    }),
+                SizedBox(width: 20)
+              ]
+            : [],
       ),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
           children: List.generate(
             filteredTopics.length,
-            (index) =>
-                TopicWidgetFactory.createWidget(topics[index], context, true),
+            (index) => AddTopicWidgetFactory.createWidget(
+                topics[index], context, true,
+                refreshUI: refreshUI),
           ),
         ),
       ),

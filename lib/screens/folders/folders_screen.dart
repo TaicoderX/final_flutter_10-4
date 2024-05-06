@@ -5,12 +5,11 @@ import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/controllers/folder.dart';
 import 'package:shop_app/controllers/topic.dart';
+import 'package:shop_app/screens/add_topic/add_topic_to_folder.dart';
 import 'package:shop_app/screens/flipcard/components/custom_listtile.dart';
-import 'package:shop_app/screens/flipcard/flipcard_screen.dart';
 import 'package:shop_app/screens/folders/components/edit_folder.dart';
 import 'package:shop_app/screens/folders/components/empty_folder.dart';
 import 'package:shop_app/screens/folders/components/topic_factory.dart';
-import 'package:shop_app/screens/folders/components/topic_in_folder.dart';
 import 'package:shop_app/screens/init_screen.dart';
 
 class FolderScreen extends StatefulWidget {
@@ -189,24 +188,6 @@ class _FolderScreenState extends State<FolderScreen> {
                   itemCount: topicDetails.length,
                   itemBuilder: (context, index) {
                     var topic = topicDetails[index]['topic'];
-
-                    // return TopicInFolder(
-                    //   image: topic['ownerId']['profileImage'] ?? "",
-                    //   title: topic['topicNameEnglish'] ?? 'Title',
-                    //   words: topic['vocabularyCount'] ?? 0,
-                    //   name: topic['ownerId']['username'] ?? 'Name',
-                    //   press: () {
-                    //     Navigator.pushNamed(context, FlipCardScreen.routeName,
-                    //         arguments: {
-                    //           "_id": topic["_id"],
-                    //           "title": topic["topicNameEnglish"],
-                    //           'image': topic['ownerId']['profileImage'] ?? '',
-                    //           'username': topic['ownerId']['username'] ?? '',
-                    //           'terms':
-                    //               topic['vocabularyCount'].toString() ?? '',
-                    //         });
-                    //   },
-                    // );
                     return TopicWidgetFactory.createWidget(
                         topic, context, false);
                   },
@@ -251,8 +232,12 @@ class _FolderScreenState extends State<FolderScreen> {
                 icon: Icons.add_to_photos,
                 onTap: () {
                   Navigator.pop(context);
-                  // await 
-                  // AddTopicToFolder
+                  Navigator.pushNamed(context, AddTopicToFolder.routeName,
+                      arguments: {
+                        'existingTopics':
+                            topicDetails.map((e) => e['topic']['_id']).toList(),
+                        'folderId': folderId,
+                      });
                 },
               ),
               Divider(),

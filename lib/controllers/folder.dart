@@ -82,3 +82,35 @@ Future<Map<String, dynamic>> updateFolder(
         'Failed to load topics: Server responded with ${response.statusCode}');
   }
 }
+
+Future<Map<String, dynamic>> addTopicToFolder(String token, String topicId, String folderId) async {
+  var response = await http.post(
+    Uri.parse(addTopicToFolderUrl.replaceFirst(':id', folderId).replaceFirst(':topicId', topicId)),
+    headers: {
+      'token': '$token',
+    },
+  );
+
+  if (response.statusCode == 200 || response.statusCode != 500) {
+    return json.decode(response.body);
+  } else {
+    throw Exception(
+        'Failed to load topics: Server responded with ${response.statusCode}');
+  }
+}
+
+Future<Map<String, dynamic>> removeTopicFromFolder(String token, String topicId, String folderId) async {
+  var response = await http.delete(
+    Uri.parse(deleteTopicInFolderUrl.replaceFirst(':id', folderId).replaceFirst(':topicId', topicId)),
+    headers: {
+      'token': '$token',
+    },
+  );
+
+  if (response.statusCode == 200 || response.statusCode != 500) {
+    return json.decode(response.body);
+  } else {
+    throw Exception(
+        'Failed to load topics: Server responded with ${response.statusCode}');
+  }
+}
