@@ -1,14 +1,12 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:quickalert/models/quickalert_type.dart';
-import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/controllers/topic.dart';
 import 'package:shop_app/screens/flipcard/flipcard_screen.dart';
 import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:csv/csv.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:path/path.dart' as path;
 
 class StudySetScreen extends StatefulWidget {
@@ -356,15 +354,52 @@ class _StudySetScreenState extends State<StudySetScreen> {
     if (result != null) {
       File file = File(result.files.single.path!);
       String fileExtension = path.extension(file.path).toLowerCase();
-
       List<Map<String, String>> termsDefinitions = [];
 
-      if (fileExtension == '.xlsx') {
-        var bytes = file.readAsBytesSync();
-        var excel = Excel.decodeBytes(bytes);
-        for (var table in excel.tables.keys) {
-          var rows = excel.tables[table]?.rows ?? [];
-          for (int i = 1; i < rows.length; i++) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Importing Vocabulary'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SpinKitCircle(color: Color(0xFF4C56FF), size: 50),
+                SizedBox(height: 20),
+                Text('Please wait while we import your vocabulary...'),
+              ],
+            ),
+          );
+        },
+      );
+
+      try {
+        if (fileExtension == '.xlsx') {
+          var bytes = file.readAsBytesSync();
+          var excel = Excel.decodeBytes(bytes);
+
+          if (excel.tables.isEmpty) {
+            throw FormatException('No sheets found in the Excel file.');
+          }
+
+          for (var table in excel.tables.keys) {
+            var rows = excel.tables[table]?.rows ?? [];
+            for (int i = 0; i < rows.length; i++) {
+              var row = rows[i];
+              if (row.length >= 2) {
+                termsDefinitions.add({
+                  "englishWord": row[0]?.value?.toString() ?? '',
+                  "vietnameseWord": row[1]?.value?.toString() ?? '',
+                });
+              }
+            }
+          }
+        } else if (fileExtension == '.csv') {
+          String content = file.readAsStringSync();
+          List<List<dynamic>> rows =
+              const CsvToListConverter().convert(content);
+          for (int i = 0; i < rows.length; i++) {
             var row = rows[i];
             if (row.length >= 2) {
               termsDefinitions.add({
@@ -373,33 +408,44 @@ class _StudySetScreenState extends State<StudySetScreen> {
               });
             }
           }
+        } else {
+          throw FormatException('Unsupported file format.');
         }
-      } else if (fileExtension == '.csv') {
-        String content = file.readAsStringSync();
-        List<List<dynamic>> rows = const CsvToListConverter().convert(content);
-        for (int i = 1; i < rows.length; i++) {
-          var row = rows[i];
-          if (row.length >= 2) {
-            termsDefinitions.add({
-              "englishWord": row[0]?.toString() ?? '',
-              "vietnameseWord": row[1]?.toString() ?? '',
-            });
-          }
-        }
-      }
 
-      setState(() {
-        termControllers.clear();
-        definitionControllers.clear();
-        containers.clear();
-        for (int i = 0; i < termsDefinitions.length; i++) {
-          termControllers.add(TextEditingController(
-              text: termsDefinitions[i]["englishWord"] ?? ''));
-          definitionControllers.add(TextEditingController(
-              text: termsDefinitions[i]["vietnameseWord"] ?? ''));
-          containers.add(_buildContainer('Term', 'Definition', i));
-        }
-      });
+        setState(() {
+          // Xóa các containers và controllers hiện tại
+          termControllers.clear();
+          definitionControllers.clear();
+          containers.clear();
+          focusNodes.clear();
+
+          for (int i = 0; i < termsDefinitions.length; i++) {
+            termControllers.add(TextEditingController(
+                text: termsDefinitions[i]["englishWord"] ?? ''));
+            definitionControllers.add(TextEditingController(
+                text: termsDefinitions[i]["vietnameseWord"] ?? ''));
+            focusNodes.addAll([FocusNode(), FocusNode()]);
+            containers.add(_buildContainer('Term', 'Definition', i));
+          }
+        });
+
+        Navigator.pop(context); // Đóng thanh tiến trình
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                'Successfully imported ${termsDefinitions.length} vocabulary items.'),
+          ),
+        );
+      } catch (e) {
+        Navigator.pop(context); // Đóng thanh tiến trình
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error importing vocabulary: $e')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No file selected')),
+      );
     }
   }
 }
