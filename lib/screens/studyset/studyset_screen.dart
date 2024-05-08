@@ -1,7 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/controllers/topic.dart';
 import 'package:shop_app/screens/flipcard/flipcard_screen.dart';
+import 'package:excel/excel.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:csv/csv.dart';
+import 'package:path/path.dart' as path;
 
 class StudySetScreen extends StatefulWidget {
   static String routeName = "/studyset";
@@ -26,7 +34,7 @@ class _StudySetScreenState extends State<StudySetScreen> {
   String _token = '';
   bool isPublic = false;
   String publicText = 'Just me';
-  
+
   @override
   void initState() {
     super.initState();
@@ -134,6 +142,35 @@ class _StudySetScreenState extends State<StudySetScreen> {
                 });
               }, isPublic ? Icons.public : Icons.public_off,
                   isPublic ? Color(0xFF4C56FF) : Colors.grey),
+              SizedBox(
+                height: 10,
+              ),
+              const Divider(height: 1.0, color: Color(0xFFF2F2F7)),
+              SizedBox(
+                height: 10,
+              ),
+              ListTile(
+                leading: Icon(Icons.file_copy, color: Color(0xFF4C56FF)),
+                title: Text(
+                  'Import vocabulary to set',
+                  style: TextStyle(
+                      color: Color(0xFF4C56FF),
+                      fontFamily: 'Roboto',
+                      fontWeight: FontWeight.bold),
+                ),
+                onTap: () {
+                  // QuickAlert.show(
+                  //   context: context,
+                  //   type: QuickAlertType.loading,
+                  //   title: 'Loading',
+                  //   text: ('Please wait...'),
+                  // );
+                  // importTerms().then((value) {
+                  //   Navigator.pop(context);
+                  // });
+                  importTerms();
+                },
+              ),
               const Divider(height: 1.0, color: Color(0xFFF2F2F7)),
               ...containers,
               SizedBox(
@@ -308,5 +345,61 @@ class _StudySetScreenState extends State<StudySetScreen> {
       inactiveTrackColor: const Color(0xFFE9E9EA),
       activeColor: Colors.white,
     );
+  }
+
+  Future<void> importTerms() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['xlsx', 'csv'],
+    );
+
+    if (result != null) {
+      File file = File(result.files.single.path!);
+      String fileExtension = path.extension(file.path).toLowerCase();
+
+      List<Map<String, String>> termsDefinitions = [];
+
+      if (fileExtension == '.xlsx') {
+        var bytes = file.readAsBytesSync();
+        var excel = Excel.decodeBytes(bytes);
+        for (var table in excel.tables.keys) {
+          var rows = excel.tables[table]?.rows ?? [];
+          for (int i = 1; i < rows.length; i++) {
+            var row = rows[i];
+            if (row.length >= 2) {
+              termsDefinitions.add({
+                "englishWord": row[0]?.toString() ?? '',
+                "vietnameseWord": row[1]?.toString() ?? '',
+              });
+            }
+          }
+        }
+      } else if (fileExtension == '.csv') {
+        String content = file.readAsStringSync();
+        List<List<dynamic>> rows = const CsvToListConverter().convert(content);
+        for (int i = 1; i < rows.length; i++) {
+          var row = rows[i];
+          if (row.length >= 2) {
+            termsDefinitions.add({
+              "englishWord": row[0]?.toString() ?? '',
+              "vietnameseWord": row[1]?.toString() ?? '',
+            });
+          }
+        }
+      }
+
+      setState(() {
+        termControllers.clear();
+        definitionControllers.clear();
+        containers.clear();
+        for (int i = 0; i < termsDefinitions.length; i++) {
+          termControllers.add(TextEditingController(
+              text: termsDefinitions[i]["englishWord"] ?? ''));
+          definitionControllers.add(TextEditingController(
+              text: termsDefinitions[i]["vietnameseWord"] ?? ''));
+          containers.add(_buildContainer('Term', 'Definition', i));
+        }
+      });
+    }
   }
 }

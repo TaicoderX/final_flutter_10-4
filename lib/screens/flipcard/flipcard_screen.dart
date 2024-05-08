@@ -4,7 +4,7 @@ import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/controllers/topic.dart';
 import 'package:shop_app/controllers/user.controller.dart';
-import 'package:shop_app/screens/add_folder/add_folder_to_topic.dart';
+import 'package:shop_app/screens/add_folder/choose_folder_get_topic.dart';
 import 'package:shop_app/screens/flipcard/components/clone_topic.dart';
 import 'package:shop_app/screens/flipcard/components/custom_listtile.dart';
 import 'package:shop_app/screens/flipcard/components/edit_topic.dart';
@@ -159,7 +159,12 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
                   icon: Icons.add_box_outlined,
                   onTap: () async {
                     Navigator.pop(context);
-                    await Navigator.pushNamed(context, AddToFolder.routeName);
+                    await Navigator.pushNamed(context, ChooseFolderToGetTopic.routeName, arguments: {
+                      'topicId': topicId,
+                      // 'title': title,
+                      // 'description': description,
+                      // 'vocabularies': topics['vocabularies'],
+                    });
                   },
                 ),
                 Divider(),
@@ -214,7 +219,12 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
                   icon: Icons.add_box_outlined,
                   onTap: () async {
                     Navigator.pop(context);
-                    await Navigator.pushNamed(context, AddToFolder.routeName);
+                    await Navigator.pushNamed(context, ChooseFolderToGetTopic.routeName, arguments: {
+                      'topicId': topicId,
+                      // 'title': title,
+                      // 'description': description,
+                      // 'vocabularies': topics['vocabularies'],
+                    },);
                   },
                 ),
                 Divider(),

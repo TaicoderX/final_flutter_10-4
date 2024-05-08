@@ -23,6 +23,8 @@ class _FolderScreenState extends State<FolderScreen> {
   List<dynamic> topicDetails = [];
   String _token = "";
   String folderID = "";
+  bool _loading = true;
+  int _sets = 0;
 
   @override
   void initState() {
@@ -42,14 +44,17 @@ class _FolderScreenState extends State<FolderScreen> {
 
     try {
       Map<String, dynamic> data = await getTopicByFolderID(id, _token);
-
+      var res = await getFolderByFolderID(id, _token);
       List<dynamic>? topicsFromAPI = data['topics'];
 
       setState(() {
         topicDetails = topicsFromAPI ?? [];
+        _sets = res['folder']['topicCount'];
+        _loading = false;
       });
     } catch (e) {
       print("Failed to load topic details: $e");
+      _loading = false;
     }
   }
 
@@ -59,7 +64,6 @@ class _FolderScreenState extends State<FolderScreen> {
     String title = args['title'];
     String _username = args['username'];
     String _profileImage = args['image'];
-    int _sets = args['sets'];
     String _folderId = args['folderID'];
 
     return Scaffold(
@@ -163,25 +167,76 @@ class _FolderScreenState extends State<FolderScreen> {
                   SizedBox(
                     height: 10,
                   ),
-                  if (topicDetails.isNotEmpty)
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF4454FF),
-                        shape: BeveledRectangleBorder(
-                          borderRadius: BorderRadius.circular(7.0),
-                        ),
-                      ),
-                      child: const Text(
-                        "Study this folder",
-                        style: TextStyle(
-                            fontSize: 17, fontWeight: FontWeight.bold),
-                      ),
-                    ),
                 ],
               ),
             ),
-            if (topicDetails.isNotEmpty)
+            Container(
+              margin: EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    spreadRadius: 1,
+                    blurRadius: 3,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (topicDetails.isEmpty)
+                    Text(
+                      'This folder has no sets',
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  if (!topicDetails.isEmpty)
+                    Text(
+                      'Sets in this folder',
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  SizedBox(height: 8.0),
+                  Text(
+                    'Organize your study sets by adding them to this folder.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  SizedBox(height: 24.0),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, AddTopicToFolder.routeName,
+                          arguments: {
+                            'existingTopics': topicDetails
+                                .map((e) => e['topic']['_id'])
+                                .toList(),
+                            'folderId': _folderId,
+                            'onUpdate': updateTopics,
+                          });
+                    },
+                    child: Text('Add a set'),
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.blue,
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 32.0, vertical: 16.0),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (topicDetails.isNotEmpty && !_loading)
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ListView.builder(
@@ -195,64 +250,7 @@ class _FolderScreenState extends State<FolderScreen> {
                   },
                 ),
               ),
-            if (topicDetails.isEmpty)
-              Container(
-                margin: EdgeInsets.all(16.0),
-                padding: EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.2),
-                      spreadRadius: 1,
-                      blurRadius: 3,
-                      offset: Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'This folder has no sets',
-                      style: TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 8.0),
-                    Text(
-                      'Organize your study sets by adding them to this folder.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    SizedBox(height: 24.0),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, AddTopicToFolder.routeName,
-                            arguments: {
-                              'existingTopics': topicDetails
-                                  .map((e) => e['topic']['_id'])
-                                  .toList(),
-                              'folderId': _folderId,
-                              'onUpdate': updateTopics,
-                            });
-                      },
-                      child: Text('Add a set'),
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: Colors.blue,
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 32.0, vertical: 16.0),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            if (_loading) Center(child: CircularProgressIndicator()),
           ],
         ),
       ),

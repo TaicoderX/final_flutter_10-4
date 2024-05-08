@@ -15,6 +15,7 @@ String createAchievementUrl = users + "/achievement/";
 String topic = baseUrl + "/topics";
 String getTopic = topic + "/";
 String getTopicByIdUrl = topic + "/";
+String getFolderByTopicIdUrl = topic + "/:id/folder";
 String getTopicByFolderId = topic + "/folders/";
 String getPublicTopicUrl = topic + "/public/getPublicTopic";
 String createTopicUrl = topic;
@@ -31,6 +32,7 @@ String getVocabByTopicId = vocab + "/topics/";
 
 //folder
 String folder = baseUrl + "/folders";
+String getFolderByFolderIdUrl = folder + "/";
 String getFolderByUser = folder + "/users/";
 String createFolderUrl = folder + "/";
 String addTopicToFolderUrl = folder + "/:id/topics/:topicId";

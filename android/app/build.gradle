@@ -1,3 +1,18 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:4.2.0' // or your current version
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.24" // Add this line with the latest Kotlin version
+        classpath 'com.google.gms:google-services:4.3.10'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.8.1'
+        classpath 'com.google.firebase:perf-plugin:1.4.0'
+    }
+}
+
 plugins {
     id "com.android.application"
     id "kotlin-android"
@@ -24,7 +39,7 @@ if (flutterVersionName == null) {
 
 android {
     namespace "com.example.final_flutter_10_4"
-    compileSdk flutter.compileSdkVersion
+    compileSdk 34
     ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -45,7 +60,7 @@ android {
         applicationId "com.example.final_flutter_10_4"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion flutter.minSdkVersion
+        minSdkVersion 21
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

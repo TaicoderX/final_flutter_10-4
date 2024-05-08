@@ -19,6 +19,7 @@ class _AddTopicToFolderState extends State<AddTopicToFolder> {
   Map<String, dynamic> userInfo = {};
   String folderId = '';
   String token = '';
+  bool _loading = true;
 
   @override
   void initState() {
@@ -45,10 +46,12 @@ class _AddTopicToFolderState extends State<AddTopicToFolder> {
         List<String> alreadyInFolder =
             dynamicList.map((item) => item.toString()).toList();
         AddTopicWidgetFactory.alreadyInFolder = alreadyInFolder;
+        _loading = false;
       });
       LocalStorageService().saveData('topics', topics);
     } catch (e) {
       print('Exception occurred while loading topics: $e');
+        _loading = false;
     }
   }
 
@@ -60,6 +63,11 @@ class _AddTopicToFolderState extends State<AddTopicToFolder> {
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)?.settings.arguments as Map;
     final Function onUpdate = args['onUpdate'];
+
+    if (_loading) {
+      return Center(child: CircularProgressIndicator());
+    }
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(

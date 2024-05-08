@@ -42,7 +42,7 @@ dependencies:
   http: ^1.2.0
   flutter_easyloading: ^3.0.5
   flip_card: ^0.7.0
-  flutter_tts: ^4.0.2
+  # flutter_tts: ^4.0.2
   smooth_page_indicator: ^1.1.0
   get: ^4.6.6
   line_awesome_flutter: ^2.0.0
@@ -53,6 +53,11 @@ dependencies:
   audioplayers: ^5.2.1
   fl_chart: ^0.67.0
   cached_network_image: ^3.3.1
+  file_picker: ^8.0.0+1
+  excel: ^4.0.3
+  csv: ^6.0.0
+  path: ^1.8.3
+  flutter_tts: ^4.0.2
 
 dev_dependencies:
   flutter_test:

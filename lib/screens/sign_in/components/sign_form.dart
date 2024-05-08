@@ -4,8 +4,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:shop_app/screens/init_screen.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-
 import '../../../components/custom_surfix_icon.dart';
 import '../../../components/form_error.dart';
 import '../../../constants.dart';

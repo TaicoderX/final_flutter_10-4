@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:shop_app/screens/achievements/achievement_screen.dart';
 import 'package:shop_app/screens/achievements/components/achievement.dart';
-import 'package:shop_app/screens/add_folder/add_folder_to_topic.dart';
+import 'package:shop_app/screens/add_folder/choose_folder_get_topic.dart';
 import 'package:shop_app/screens/add_topic/add_topic_to_folder.dart';
 import 'package:shop_app/screens/discover/discover_screen.dart';
 import 'package:shop_app/screens/flashcard/components/congrats_screen.dart';
@@ -55,5 +55,5 @@ final Map<String, WidgetBuilder> routes = {
   CongratsScreen.routeName:(context) => CongratsScreen(),
   QuizPage.routeName:(context) => QuizPage(),
   AddTopicToFolder.routeName:(context) => AddTopicToFolder(),
-  AddToFolder.routeName:(context) => AddToFolder(),
+  ChooseFolderToGetTopic.routeName:(context) => ChooseFolderToGetTopic(),
 };

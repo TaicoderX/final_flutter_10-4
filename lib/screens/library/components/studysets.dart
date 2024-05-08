@@ -15,6 +15,7 @@ class _StudySetsState extends State<StudySets> {
   List<dynamic> topics = [];
   List<dynamic> filteredTopics = [];
   Map<String, dynamic> userInfo = {};
+  bool _loading = true;
 
   @override
   void initState() {
@@ -28,6 +29,7 @@ class _StudySetsState extends State<StudySets> {
       setState(() {
         topics = storedTopics;
         filteredTopics = topics;
+        _loading = false;
       });
       return;
     }
@@ -47,21 +49,26 @@ class _StudySetsState extends State<StudySets> {
       LocalStorageService().saveData('topics', topics);
     } catch (e) {
       print('Exception occurred while loading topics: $e');
+        _loading = false;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_loading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     if (filteredTopics.isEmpty) {
-      return TopicEmptyScreen();
+      return const TopicEmptyScreen();
     }
 
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
             // child: SectionTitle(title: "Sets", press: () {}),
           ),
           SingleChildScrollView(
@@ -69,7 +76,8 @@ class _StudySetsState extends State<StudySets> {
             child: Column(
               children: List.generate(
                 filteredTopics.length,
-                (index) => TopicWidgetFactory.createWidget(topics[index], context, true),
+                (index) => TopicWidgetFactory.createWidget(
+                    topics[index], context, true),
               ),
             ),
           ),
