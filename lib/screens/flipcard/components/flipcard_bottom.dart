@@ -9,11 +9,11 @@ class Bottom extends StatefulWidget {
   final String topicId;
 
   const Bottom({
-    Key? key,
+    super.key,
     required this.vocabularies,
     required this.currentPage,
     required this.topicId,
-  }) : super(key: key);
+  });
 
   @override
   State<Bottom> createState() => _BottomState();

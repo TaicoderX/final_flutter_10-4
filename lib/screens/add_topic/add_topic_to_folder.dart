@@ -58,6 +58,8 @@ class _AddTopicToFolderState extends State<AddTopicToFolder> {
 
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)?.settings.arguments as Map;
+    final Function onUpdate = args['onUpdate'];
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -81,26 +83,24 @@ class _AddTopicToFolderState extends State<AddTopicToFolder> {
                       size: 30,
                     ),
                     onPressed: () async {
-                      // Process the selected and deselected topics
                       var selectedTopics =
                           AddTopicWidgetFactory.newlySelectedTopics;
                       var removedTopics =
                           AddTopicWidgetFactory.deselectedTopics;
 
-                      // TODO: Add API calls to add topics to the folder
-                      // Example: await addTopicsToFolderAPI(selectedTopics);
                       for (var topic in selectedTopics) {
                         await addTopicToFolder(token, topic, folderId);
                       }
-                      // TODO: Add API calls to remove topics from the folder
-                      // Example: await removeTopicsFromFolderAPI(removedTopics);
+
                       for (var topic in removedTopics) {
                         await removeTopicFromFolder(token, topic, folderId);
                       }
-                      // Reset the selection arrays after processing
+
                       AddTopicWidgetFactory.newlySelectedTopics = [];
                       AddTopicWidgetFactory.deselectedTopics = [];
                       refreshUI();
+                      await onUpdate();
+                      Navigator.pop(context);
                     }),
                 SizedBox(width: 20)
               ]

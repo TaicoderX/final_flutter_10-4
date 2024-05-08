@@ -2,17 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:shop_app/screens/flashcard/flashcard_screen.dart';
 import 'package:shop_app/screens/quiz/quiz_page_screen.dart';
 
-class Middle extends StatelessWidget {
+class Middle extends StatefulWidget {
   final Widget listTile;
   final String title, description, topicId;
   final List<dynamic> vocabularies;
-  Middle(
-      {required this.listTile,
+  const Middle(
+      {super.key, required this.listTile,
       required this.title,
       required this.description,
       required this.topicId,
       required this.vocabularies});
 
+  @override
+  State<Middle> createState() => _MiddleState();
+}
+
+class _MiddleState extends State<Middle> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -21,7 +26,7 @@ class Middle extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Text(
-            title,
+            widget.title,
             style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w900,
@@ -29,11 +34,11 @@ class Middle extends StatelessWidget {
                 fontFamily: 'Roboto'),
           ),
         ),
-        listTile,
+        widget.listTile,
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Text(
-            description,
+            widget.description,
             style: TextStyle(
                 fontSize: 15, color: Colors.grey, fontFamily: 'Roboto'),
           ),
@@ -47,7 +52,7 @@ class Middle extends StatelessWidget {
               Navigator.pushNamed(
                 context,
                 FlashcardsView.routeName,
-                arguments: {"vocabularies": vocabularies, "topicId": topicId},
+                arguments: {"vocabularies": widget.vocabularies, "topicId": widget.topicId},
               );
             }),
             buildListTile(
@@ -58,7 +63,7 @@ class Middle extends StatelessWidget {
                 Navigator.pushNamed(
                   context,
                   QuizPage.routeName,
-                  arguments: {"vocabularies": vocabularies, "topicId": topicId},
+                  arguments: {"vocabularies": widget.vocabularies, "topicId": widget.topicId},
                 );
               },
             ),

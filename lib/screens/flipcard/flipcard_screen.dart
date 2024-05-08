@@ -15,7 +15,7 @@ import 'components/flipcard_middle.dart';
 
 class FlipCardScreen extends StatefulWidget {
   static const String routeName = "/flipcards";
-  const FlipCardScreen({Key? key}) : super(key: key);
+  const FlipCardScreen({super.key});
 
   @override
   _FlipCardScreenState createState() => _FlipCardScreenState();

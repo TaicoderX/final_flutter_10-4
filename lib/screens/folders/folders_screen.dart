@@ -8,7 +8,6 @@ import 'package:shop_app/controllers/topic.dart';
 import 'package:shop_app/screens/add_topic/add_topic_to_folder.dart';
 import 'package:shop_app/screens/flipcard/components/custom_listtile.dart';
 import 'package:shop_app/screens/folders/components/edit_folder.dart';
-import 'package:shop_app/screens/folders/components/empty_folder.dart';
 import 'package:shop_app/screens/folders/components/topic_factory.dart';
 import 'package:shop_app/screens/init_screen.dart';
 
@@ -23,6 +22,7 @@ class FolderScreen extends StatefulWidget {
 class _FolderScreenState extends State<FolderScreen> {
   List<dynamic> topicDetails = [];
   String _token = "";
+  String folderID = "";
 
   @override
   void initState() {
@@ -30,7 +30,7 @@ class _FolderScreenState extends State<FolderScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (ModalRoute.of(context)?.settings.arguments != null) {
         final args = ModalRoute.of(context)?.settings.arguments as Map;
-        String folderID = args['folderID'];
+        folderID = args['folderID'];
         loadTopicDetails(folderID);
       }
     });
@@ -42,9 +42,11 @@ class _FolderScreenState extends State<FolderScreen> {
 
     try {
       Map<String, dynamic> data = await getTopicByFolderID(id, _token);
-      List<dynamic> topicsFromAPI = data['topics'];
+
+      List<dynamic>? topicsFromAPI = data['topics'];
+
       setState(() {
-        topicDetails = topicsFromAPI;
+        topicDetails = topicsFromAPI ?? [];
       });
     } catch (e) {
       print("Failed to load topic details: $e");
@@ -54,7 +56,7 @@ class _FolderScreenState extends State<FolderScreen> {
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)?.settings.arguments as Map;
-    String _title = args['title'];
+    String title = args['title'];
     String _username = args['username'];
     String _profileImage = args['image'];
     int _sets = args['sets'];
@@ -90,7 +92,7 @@ class _FolderScreenState extends State<FolderScreen> {
               color: Color(0xFF444E66),
             ),
             onPressed: () {
-              _showBottomSheet(context, _folderId, _title);
+              _showBottomSheet(context, _folderId, title);
             },
           ),
           const SizedBox(
@@ -112,7 +114,7 @@ class _FolderScreenState extends State<FolderScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        _title,
+                        title,
                         style: const TextStyle(
                           fontSize: 30,
                           fontWeight: FontWeight.bold,
@@ -193,7 +195,64 @@ class _FolderScreenState extends State<FolderScreen> {
                   },
                 ),
               ),
-            if (topicDetails.isEmpty) const EmptyFolder(),
+            if (topicDetails.isEmpty)
+              Container(
+                margin: EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(16.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.2),
+                      spreadRadius: 1,
+                      blurRadius: 3,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'This folder has no sets',
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 8.0),
+                    Text(
+                      'Organize your study sets by adding them to this folder.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    SizedBox(height: 24.0),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, AddTopicToFolder.routeName,
+                            arguments: {
+                              'existingTopics': topicDetails
+                                  .map((e) => e['topic']['_id'])
+                                  .toList(),
+                              'folderId': _folderId,
+                              'onUpdate': updateTopics,
+                            });
+                      },
+                      child: Text('Add a set'),
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.blue,
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 32.0, vertical: 16.0),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
           ],
         ),
       ),
@@ -237,6 +296,7 @@ class _FolderScreenState extends State<FolderScreen> {
                         'existingTopics':
                             topicDetails.map((e) => e['topic']['_id']).toList(),
                         'folderId': folderId,
+                        'onUpdate': updateTopics,
                       });
                 },
               ),
@@ -267,6 +327,12 @@ class _FolderScreenState extends State<FolderScreen> {
         );
       },
     );
+  }
+
+  void updateTopics() {
+    final args = ModalRoute.of(context)?.settings.arguments as Map;
+    String folderID = args['folderID'];
+    loadTopicDetails(folderID);
   }
 
   void handleDeleteFolder(

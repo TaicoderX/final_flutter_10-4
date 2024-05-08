@@ -51,7 +51,7 @@ class NewFolderScreen extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         child: Form(
-          key: _formKey, // Associate the Form with the GlobalKey
+          key: _formKey,
           child: Container(
             padding: const EdgeInsets.all(10.0),
             child: Column(
