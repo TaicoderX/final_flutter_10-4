@@ -429,7 +429,7 @@ class _StudySetScreenState extends State<StudySetScreen> {
           }
         });
 
-        Navigator.pop(context); // Đóng thanh tiến trình
+        Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -437,7 +437,7 @@ class _StudySetScreenState extends State<StudySetScreen> {
           ),
         );
       } catch (e) {
-        Navigator.pop(context); // Đóng thanh tiến trình
+        Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error importing vocabulary: $e')),
         );

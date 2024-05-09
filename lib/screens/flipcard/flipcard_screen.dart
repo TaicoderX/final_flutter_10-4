@@ -12,6 +12,11 @@ import 'package:shop_app/screens/init_screen.dart';
 import 'components/flipcard_header.dart';
 import 'components/flipcard_bottom.dart';
 import 'components/flipcard_middle.dart';
+import 'package:csv/csv.dart';
+import 'package:excel/excel.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
 class FlipCardScreen extends StatefulWidget {
   static const String routeName = "/flipcards";
@@ -83,7 +88,7 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
                 size: 30, color: Color(0xFF444E66)),
             onPressed: () => Navigator.pushNamedAndRemoveUntil(
                 context, InitScreen.routeName, (route) => false)),
-        actions: [_buildMoreOptionsButton(), SizedBox(width: 10)],
+        actions: [_buildMoreOptionsButton(), const SizedBox(width: 10)],
       );
 
   IconButton _buildMoreOptionsButton() => IconButton(
@@ -151,23 +156,29 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
           return Container(
             height: 280,
             width: double.infinity,
-            padding: EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
             child: ListView(
               children: <Widget>[
+                CustomListTile(
+                  title: "Export file",
+                  icon: Icons.file_download,
+                  onTap: () async {
+                    Navigator.pop(context);
+                    _showExportDialog(context);
+                  },
+                ),
+                const Divider(),
                 CustomListTile(
                   title: "Add to folder",
                   icon: Icons.add_box_outlined,
                   onTap: () async {
                     Navigator.pop(context);
-                    await Navigator.pushNamed(context, ChooseFolderToGetTopic.routeName, arguments: {
-                      'topicId': topicId,
-                      // 'title': title,
-                      // 'description': description,
-                      // 'vocabularies': topics['vocabularies'],
-                    });
+                    await Navigator.pushNamed(
+                        context, ChooseFolderToGetTopic.routeName,
+                        arguments: {'topicId': topicId});
                   },
                 ),
-                Divider(),
+                const Divider(),
                 CustomListTile(
                   title: "Edit set",
                   icon: Icons.edit,
@@ -176,7 +187,7 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
                         topics['vocabularies']);
                   },
                 ),
-                Divider(),
+                const Divider(),
                 CustomListTile(
                   title: "Delete set",
                   icon: Icons.delete,
@@ -184,7 +195,7 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
                     handleDeleteTopic(context, token, topicId);
                   },
                 ),
-                Divider(),
+                const Divider(),
                 ListTile(
                   title: Center(
                       child: Text(
@@ -211,7 +222,7 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
           return Container(
             height: 200,
             width: double.infinity,
-            padding: EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
             child: ListView(
               children: <Widget>[
                 CustomListTile(
@@ -219,15 +230,16 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
                   icon: Icons.add_box_outlined,
                   onTap: () async {
                     Navigator.pop(context);
-                    await Navigator.pushNamed(context, ChooseFolderToGetTopic.routeName, arguments: {
-                      'topicId': topicId,
-                      // 'title': title,
-                      // 'description': description,
-                      // 'vocabularies': topics['vocabularies'],
-                    },);
+                    await Navigator.pushNamed(
+                      context,
+                      ChooseFolderToGetTopic.routeName,
+                      arguments: {
+                        'topicId': topicId,
+                      },
+                    );
                   },
                 ),
-                Divider(),
+                const Divider(),
                 CustomListTile(
                   title: "Save and edit",
                   icon: Icons.edit,
@@ -239,7 +251,7 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
                             topics['vocabularies']);
                   },
                 ),
-                Divider(),
+                const Divider(),
                 ListTile(
                   title: Center(
                       child: Text(
@@ -298,13 +310,13 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
       text: 'Do you want to delete this topic?',
       confirmBtnText: 'Yes',
       cancelBtnText: 'No',
-      confirmBtnColor: Color(0xFF3F56FF),
+      confirmBtnColor: const Color(0xFF3F56FF),
       onConfirmBtnTap: () async {
         deleteTopic(token, topicId).then((value) async {
           if ((value?['message'] ?? '') != '') {
             SnackBar snackBar = SnackBar(
               content: Text(value?['message'] ?? ''),
-              duration: Duration(seconds: 2),
+              duration: const Duration(seconds: 2),
             );
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
             Navigator.pushNamedAndRemoveUntil(
@@ -320,4 +332,107 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
       },
     );
   }
+
+  Future<void> _showExportDialog(BuildContext context) async {
+    if (topics['vocabularies'] == null || topics['vocabularies'].isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('There is no data to export.'),
+        ),
+      );
+      return;
+    }
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Export Options"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                title: const Text("Export as CSV"),
+                onTap: () {
+                  Navigator.pop(context);
+                  _exportFile(context, "csv");
+                },
+              ),
+              ListTile(
+                title: const Text("Export as Excel"),
+                onTap: () {
+                  Navigator.pop(context);
+                  _exportFile(context, "excel");
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _exportFile(BuildContext context, String format) async {
+  // Ensure the vocabularies exist
+  final vocabularies = topics['vocabularies'] ?? [];
+  if (vocabularies.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('There is no data to export.'),
+      ),
+    );
+    return;
+  }
+
+  // Request storage permission
+  if (!await Permission.storage.request().isGranted) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Storage permission denied.'),
+      ),
+    );
+    return;
+  }
+
+  // Create export file
+  try {
+    Directory directory = await getExternalStorageDirectory() ?? Directory.systemTemp;
+    String fileName = 'exported_vocabularies.' + (format == 'csv' ? 'csv' : 'xlsx');
+    String filePath = '${directory.path}/$fileName';
+    
+    File file = File(filePath);
+
+    if (format == 'csv') {
+      List<List<String>> rows = [
+        ['English Word', 'Vietnamese Word']
+      ];
+
+      vocabularies.forEach((item) {
+        rows.add([item['englishWord'], item['vietnameseWord']]);
+      });
+
+      String csvData = const ListToCsvConverter().convert(rows);
+      await file.writeAsString(csvData);
+    } else {
+      var excel = Excel.createExcel();
+      Sheet sheet = excel['Sheet1'];
+      vocabularies.forEach((item) {
+        sheet.appendRow([item['englishWord'], item['vietnameseWord']]);
+      });
+
+      await file.writeAsBytes(excel.encode()!);
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('File exported successfully to $filePath.'),
+      ),
+    );
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('File export failed: $e'),
+      ),
+    );
+  }
+}
 }
