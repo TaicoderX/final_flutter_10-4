@@ -45,7 +45,8 @@ class _TopicsState extends State<Topics> {
     } else {
       setState(() {
         filteredTopics = topics.where((topic) {
-          final String topicNameLowercase = topic["topicNameEnglish"].toLowerCase();
+          final String topicNameLowercase =
+              topic["topicNameEnglish"].toLowerCase();
           return topicNameLowercase.contains(searchQueryLowercase);
         }).toList();
       });
@@ -83,11 +84,19 @@ class _TopicsState extends State<Topics> {
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return Center(child: CircularProgressIndicator());
+      return const Center(
+          child: Column(
+        children: [
+          SizedBox(
+            height: 80,
+          ),
+          CircularProgressIndicator(),
+        ],
+      ));
     }
 
     if (filteredTopics.isEmpty) {
-      return NewUser();
+      return const NewUser();
     }
 
     return Column(
@@ -100,9 +109,9 @@ class _TopicsState extends State<Topics> {
           scrollDirection: Axis.horizontal,
           child: Row(
             children: List.generate(
-              filteredTopics.length,
-              (index) => TopicWidgetFactory.createWidget(filteredTopics[index], context, false)
-            ),
+                filteredTopics.length,
+                (index) => TopicWidgetFactory.createWidget(
+                    filteredTopics[index], context, false)),
           ),
         ),
       ],

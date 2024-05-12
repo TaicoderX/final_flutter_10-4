@@ -1,3 +1,5 @@
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
@@ -12,10 +14,10 @@ import 'package:shop_app/screens/init_screen.dart';
 import 'components/flipcard_header.dart';
 import 'components/flipcard_bottom.dart';
 import 'components/flipcard_middle.dart';
+import 'dart:io';
 import 'package:csv/csv.dart';
 import 'package:excel/excel.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
 class FlipCardScreen extends StatefulWidget {
@@ -372,67 +374,86 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
   }
 
   void _exportFile(BuildContext context, String format) async {
-  // Ensure the vocabularies exist
-  final vocabularies = topics['vocabularies'] ?? [];
-  if (vocabularies.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('There is no data to export.'),
-      ),
-    );
-    return;
-  }
-
-  // Request storage permission
-  if (!await Permission.storage.request().isGranted) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Storage permission denied.'),
-      ),
-    );
-    return;
-  }
-
-  // Create export file
-  try {
-    Directory directory = await getExternalStorageDirectory() ?? Directory.systemTemp;
-    String fileName = 'exported_vocabularies.' + (format == 'csv' ? 'csv' : 'xlsx');
-    String filePath = '${directory.path}/$fileName';
-    
-    File file = File(filePath);
-
-    if (format == 'csv') {
-      List<List<String>> rows = [
-        ['English Word', 'Vietnamese Word']
-      ];
-
-      vocabularies.forEach((item) {
-        rows.add([item['englishWord'], item['vietnameseWord']]);
-      });
-
-      String csvData = const ListToCsvConverter().convert(rows);
-      await file.writeAsString(csvData);
-    } else {
-      var excel = Excel.createExcel();
-      Sheet sheet = excel['Sheet1'];
-      vocabularies.forEach((item) {
-        sheet.appendRow([item['englishWord'], item['vietnameseWord']]);
-      });
-
-      await file.writeAsBytes(excel.encode()!);
+    if (topics['vocabularies'] == null || topics['vocabularies'].isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('There is no data to export.')),
+      );
+      return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('File exported successfully to $filePath.'),
-      ),
-    );
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('File export failed: $e'),
-      ),
-    );
+    try {
+      String? outputFile = await _pickSaveLocation(format);
+      if (outputFile == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('File location not selected.')),
+        );
+        return;
+      }
+
+      if (format == "csv") {
+        await _exportToCSV(outputFile);
+      } else if (format == "excel") {
+        await _exportToExcel(outputFile);
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('File exported successfully!')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Export failed: $e')),
+      );
+    }
   }
-}
+
+  Future<String?> _pickSaveLocation(String format) async {
+    try {
+      String? outputFile = await FilePicker.platform.saveFile(
+        dialogTitle: 'Please select an output file:',
+        fileName: 'vocabularies_export.$format',
+        type: FileType.custom,
+        allowedExtensions: [format],
+      );
+      return outputFile;
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error picking file location: $e')),
+      );
+      return null;
+    }
+  }
+
+  Future<void> _exportToCSV(String path) async {
+    try {
+      List<List<dynamic>> csvData = topics['vocabularies']
+          .map<List<dynamic>>(
+              (vocab) => [vocab['englishWord'], vocab['vietnameseWord']])
+          .toList();
+
+      String csv = const ListToCsvConverter().convert(csvData);
+      await File(path).writeAsString(csv);
+    } catch (e) {
+      throw Exception('Failed to export to CSV: $e');
+    }
+  }
+
+  Future<void> _exportToExcel(String path) async {
+    try {
+      var excel = Excel.createExcel();
+      Sheet sheet = excel[excel.getDefaultSheet()!];
+
+      topics['vocabularies'].forEach((vocab) {
+        sheet.appendRow([vocab['englishWord'], vocab['vietnameseWord']]);
+      });
+
+      List<int>? fileBytes = excel.save();
+      if (fileBytes != null) {
+        await File(path).writeAsBytes(fileBytes);
+      } else {
+        throw Exception('Failed to generate Excel file bytes');
+      }
+    } catch (e) {
+      throw Exception('Failed to export to Excel: $e');
+    }
+  }
 }

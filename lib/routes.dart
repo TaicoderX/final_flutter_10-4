@@ -15,8 +15,12 @@ import 'package:shop_app/screens/folders/new_folder_screen.dart';
 import 'package:shop_app/screens/library/library_screen.dart';
 import 'package:shop_app/screens/profile/components/profile_change_password.dart';
 import 'package:shop_app/screens/profile/profile_edit_screen.dart';
+import 'package:shop_app/screens/quiz/components/options.dart';
+import 'package:shop_app/screens/quiz/components/statistic.dart';
 import 'package:shop_app/screens/quiz/quiz_page_screen.dart';
+import 'package:shop_app/screens/ranking/ranking_screen.dart';
 import 'package:shop_app/screens/studyset/studyset_screen.dart';
+import 'package:shop_app/screens/test/test_screen.dart';
 
 import 'screens/forgot_password/forgot_password_screen.dart';
 import 'screens/home/home_screen.dart';
@@ -56,4 +60,8 @@ final Map<String, WidgetBuilder> routes = {
   QuizPage.routeName:(context) => QuizPage(),
   AddTopicToFolder.routeName:(context) => AddTopicToFolder(),
   ChooseFolderToGetTopic.routeName:(context) => ChooseFolderToGetTopic(),
+  GameScreen.routeName:(context) => GameScreen(),
+  Ranking.routeName:(context) => Ranking(),
+  Statistic.routeName:(context) => Statistic(),
+  Options.routeName:(context) => Options(),
 };

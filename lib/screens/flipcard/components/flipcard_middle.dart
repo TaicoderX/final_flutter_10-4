@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/screens/flashcard/flashcard_screen.dart';
-import 'package:shop_app/screens/quiz/quiz_page_screen.dart';
+import 'package:shop_app/screens/quiz/components/options.dart';
+import 'package:shop_app/screens/ranking/ranking_screen.dart';
+import 'package:shop_app/screens/test/test_screen.dart';
 
 class Middle extends StatefulWidget {
   final Widget listTile;
@@ -60,15 +62,23 @@ class _MiddleState extends State<Middle> {
               'Learn',
               const Color(0xFF3F56FF),
               onTap: () {
-                Navigator.pushNamed(
-                  context,
-                  QuizPage.routeName,
-                  arguments: {"vocabularies": widget.vocabularies, "topicId": widget.topicId},
-                );
+                Navigator.pushNamed(context, Options.routeName, arguments: {
+                  "vocabularies": widget.vocabularies,
+                  "topicId": widget.topicId
+                });
               },
             ),
-            buildListTile(Icons.check_circle, 'Test', const Color(0xFF3F56FF)),
-            buildListTile(Icons.abc, 'Ranking', const Color(0xFF3F56FF)),
+            buildListTile(Icons.check_circle, 'Test', const Color(0xFF3F56FF),
+                onTap: () {
+              Navigator.pushNamed(
+                context,
+                GameScreen.routeName,
+                arguments: {"vocabularies": widget.vocabularies, "topicId": widget.topicId},
+              );
+            }),
+            buildListTile(Icons.abc, 'Ranking', const Color(0xFF3F56FF), onTap: () {
+              Navigator.pushNamed(context, Ranking.routeName);
+            },),
           ],
         ),
       ],

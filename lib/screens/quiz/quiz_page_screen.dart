@@ -1,5 +1,4 @@
 import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
@@ -20,6 +19,11 @@ class _QuizPageState extends State<QuizPage> {
   List<QuizData> allQuizData = [];
   Set<int> usedQuestionIndices = {};
   int wrongAnswer = 0;
+  String language = 'english';
+  int maxQuestions = 0;
+  bool isShuffle = false;
+  bool isFeedback = false;
+  var vocabularies;
 
   QuizData generateQuizData(Map<String, dynamic> args) {
     final vocabularies = List.from(args['vocabularies']);
@@ -34,18 +38,40 @@ class _QuizPageState extends State<QuizPage> {
 
     final question = vocabularies[questionIndex];
 
-    List<String> options = [question['vietnameseWord']];
+    // List<String> options = [question['vietnameseWord']];
+    // vocabularies.shuffle();
+    // options.addAll(vocabularies
+    //     .where((v) => v['vietnameseWord'] != question['vietnameseWord'])
+    //     .take(3)
+    //     .map((v) => v['vietnameseWord']));
+    // options.shuffle();
+
+    // return QuizData(
+    //   question: question['englishWord'],
+    //   options: options,
+    //   correctAnswer: question['vietnameseWord'],
+    // );
+
+    String languageQuestion =
+        language.toLowerCase() == 'english' ? "englishWord" : "vietnameseWord";
+    String languageAnswer =
+        language.toLowerCase() == 'english' ? "vietnameseWord" : "englishWord";
+
+    List<String> options = [question[languageAnswer]];
     vocabularies.shuffle();
     options.addAll(vocabularies
-        .where((v) => v['vietnameseWord'] != question['vietnameseWord'])
+        .where((v) => v[languageAnswer] != question[languageAnswer])
         .take(3)
-        .map((v) => v['vietnameseWord']));
-    options.shuffle();
+        .map((v) => v[languageAnswer]));
+
+    if (isShuffle) {
+      options.shuffle();
+    }
 
     return QuizData(
-      question: question['englishWord'],
+      question: question[languageQuestion],
       options: options,
-      correctAnswer: question['vietnameseWord'],
+      correctAnswer: question[languageAnswer],
     );
   }
 
@@ -60,8 +86,13 @@ class _QuizPageState extends State<QuizPage> {
     if (allQuizData.isEmpty) {
       final args =
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+      language = args['language'] ?? 'english';
+      maxQuestions = args['maxQuestions'] ?? args['vocabularies'].length;
+      isShuffle = args['shuffle'] ?? false;
+      isFeedback = args['feedback'] ?? true;
+      vocabularies = args['vocabularies'] ?? [];
       allQuizData = List.generate(
-          args['vocabularies'].length, (_) => generateQuizData(args));
+          maxQuestions, (_) => generateQuizData(args));
     }
   }
 
@@ -77,10 +108,16 @@ class _QuizPageState extends State<QuizPage> {
         currentQuestionIndex++;
       });
     } else {
-      // Navigate to the home screen or the desired screen when quiz is finished.
-      // Navigator.pushNamed(context, homeRouteName);
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => Statistic(wrongAnswer: wrongAnswer * 1.0, totalQuestion: allQuizData.length * 1.0)));
+      Navigator.pushNamed(context, Statistic.routeName, arguments: {
+        'totalQuestions': allQuizData.length,
+        'wrongAnswer': wrongAnswer,
+        'vocabularies': vocabularies,
+        'topicId': 'topicId',
+        'language': language,
+        'maxQuestions': maxQuestions,
+        'shuffle': isShuffle,
+        'feedback': isFeedback,
+      });
     }
   }
 
@@ -207,6 +244,10 @@ class _QuizPageState extends State<QuizPage> {
   }
 
   Future<void> correctDialog(BuildContext context, String answer) async {
+    if (!isFeedback) {
+      goToNextQuestion();
+      return;
+    }
     await audioPlayer.play(AssetSource('sounds/correct.mp3'));
     showDialog(
       context: context,
@@ -265,6 +306,11 @@ class _QuizPageState extends State<QuizPage> {
 
   Future<void> wrongDialog(BuildContext context, String question,
       String selectedAnswer, String correctAnswer) async {
+    if (!isFeedback) {
+      wrongAnswer++;
+      goToNextQuestion();
+      return;
+    }
     await audioPlayer.play(AssetSource('sounds/wrong.mp3'));
     showDialog(
       context: context,
