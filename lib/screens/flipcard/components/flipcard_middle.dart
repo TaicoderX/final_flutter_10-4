@@ -76,8 +76,11 @@ class _MiddleState extends State<Middle> {
                 arguments: {"vocabularies": widget.vocabularies, "topicId": widget.topicId},
               );
             }),
-            buildListTile(Icons.abc, 'Ranking', const Color(0xFF3F56FF), onTap: () {
+            buildListTile(Icons.tornado_sharp, 'Ranking', const Color(0xFF3F56FF), onTap: () {
               Navigator.pushNamed(context, Ranking.routeName);
+            },),
+             buildListTile(Icons.percent_rounded, 'Statistic', const Color(0xFF3F56FF), onTap: () {
+              
             },),
           ],
         ),

@@ -1,5 +1,4 @@
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
@@ -37,6 +36,7 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
   String description = '';
   late String topicId;
   late bool isDiscover;
+  bool isStudyAll = true;
 
   @override
   void didChangeDependencies() {
@@ -62,7 +62,10 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
       return;
     }
     try {
-      final value = await getVocabularyByTopicId(topicId, token);
+      var value = await getVocabularyByTopicId(topicId, token);
+      // if(!isStudyAll){
+      //   value
+      // }
       if (value != null) {
         _updateTopics(value);
       } else {
@@ -111,6 +114,57 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
           children: [
+            if (!isDiscover)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Expanded(
+                        flex: 1,
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                            foregroundColor:
+                                isStudyAll ? Colors.white : Colors.grey,
+                            backgroundColor: isStudyAll
+                                ? Colors.blue
+                                : const Color(0xFFF6F7FB),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              isStudyAll = true;
+                            });
+                          },
+                          child: Text('Study All'),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                            foregroundColor:
+                                !isStudyAll ? Colors.white : Colors.grey,
+                            backgroundColor: !isStudyAll
+                                ? Colors.blue
+                                : const Color(0xFFF6F7FB),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              isStudyAll = false;
+                            });
+                          },
+                          child: Text('Study Bookmarks'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             Header(
                 pageController: pageController,
                 currentPage: currentPage,
@@ -121,10 +175,11 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
                 topicId: topicId,
                 listTile: _buildListTile(args),
                 vocabularies: topics['vocabularies'] ?? []),
-            Bottom(
-                currentPage: currentPage,
-                vocabularies: topics['vocabularies'] ?? [],
-                topicId: topicId),
+            if (!isDiscover)
+              Bottom(
+                  currentPage: currentPage,
+                  vocabularies: topics['vocabularies'] ?? [],
+                  topicId: topicId),
           ],
         ),
       ),
@@ -155,63 +210,66 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
         context: context,
         isScrollControlled: true,
         builder: (context) {
-          return Container(
-            height: 280,
-            width: double.infinity,
-            padding: const EdgeInsets.all(8.0),
-            child: ListView(
-              children: <Widget>[
-                CustomListTile(
-                  title: "Export file",
-                  icon: Icons.file_download,
-                  onTap: () async {
-                    Navigator.pop(context);
-                    _showExportDialog(context);
-                  },
-                ),
-                const Divider(),
-                CustomListTile(
-                  title: "Add to folder",
-                  icon: Icons.add_box_outlined,
-                  onTap: () async {
-                    Navigator.pop(context);
-                    await Navigator.pushNamed(
-                        context, ChooseFolderToGetTopic.routeName,
-                        arguments: {'topicId': topicId});
-                  },
-                ),
-                const Divider(),
-                CustomListTile(
-                  title: "Edit set",
-                  icon: Icons.edit,
-                  onTap: () {
-                    handleEditTopic(context, topicId, title, description,
-                        topics['vocabularies']);
-                  },
-                ),
-                const Divider(),
-                CustomListTile(
-                  title: "Delete set",
-                  icon: Icons.delete,
-                  onTap: () {
-                    handleDeleteTopic(context, token, topicId);
-                  },
-                ),
-                const Divider(),
-                ListTile(
-                  title: Center(
-                      child: Text(
-                    'Cancel',
-                    style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey[600]),
-                  )),
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
+          return FractionallySizedBox(
+            heightFactor: 0.5,
+            child: Container(
+              height: 280,
+              width: double.infinity,
+              padding: const EdgeInsets.all(8.0),
+              child: ListView(
+                children: <Widget>[
+                  CustomListTile(
+                    title: "Export file",
+                    icon: Icons.file_download,
+                    onTap: () async {
+                      Navigator.pop(context);
+                      _showExportDialog(context);
+                    },
+                  ),
+                  const Divider(),
+                  CustomListTile(
+                    title: "Add to folder",
+                    icon: Icons.add_box_outlined,
+                    onTap: () async {
+                      Navigator.pop(context);
+                      await Navigator.pushNamed(
+                          context, ChooseFolderToGetTopic.routeName,
+                          arguments: {'topicId': topicId});
+                    },
+                  ),
+                  const Divider(),
+                  CustomListTile(
+                    title: "Edit set",
+                    icon: Icons.edit,
+                    onTap: () {
+                      handleEditTopic(context, topicId, title, description,
+                          topics['vocabularies']);
+                    },
+                  ),
+                  const Divider(),
+                  CustomListTile(
+                    title: "Delete set",
+                    icon: Icons.delete,
+                    onTap: () {
+                      handleDeleteTopic(context, token, topicId);
+                    },
+                  ),
+                  const Divider(),
+                  ListTile(
+                    title: Center(
+                        child: Text(
+                      'Cancel',
+                      style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey[600]),
+                    )),
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              ),
             ),
           );
         },

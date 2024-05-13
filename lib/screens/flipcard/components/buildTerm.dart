@@ -113,11 +113,13 @@ class _CreateTermState extends State<CreateTerm> {
             right: 15,
             child: GestureDetector(
               onTap: _toggleFavoriteStatus,
-              child: Icon(
-                isFavorite ? Icons.star : Icons.star_border,
-                color: Colors.grey,
+              child: isFavorite ? Icon(
+                 Icons.star,
+                color: Colors.yellow,
                 size: 30,
-              ),
+              )
+              : Icon(Icons.star_border, color: Colors.grey,
+                size: 30,),
             ),
           ),
           Positioned(
