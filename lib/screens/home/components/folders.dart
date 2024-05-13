@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/controllers/folder.dart';
 import 'package:shop_app/screens/folders/components/folder_factory.dart';
+import 'package:shop_app/screens/library/library_screen.dart';
 
 import 'package:shop_app/screens/local/local_storage.dart';
 
@@ -90,7 +91,15 @@ class _PopularProductsState extends State<Folders> {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: SectionTitle(
             title: "Folders",
-            press: () {},
+            press: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      LibraryScreen(initialTabIndex: 1),
+                ),
+              );
+            },
           ),
         ),
         SingleChildScrollView(
@@ -98,7 +107,8 @@ class _PopularProductsState extends State<Folders> {
           child: Row(
             children: List.generate(
               filteredFolders.length,
-              (index) => SpecialFolderFactory.createList(filteredFolders[index], context, image,name, false),
+              (index) => SpecialFolderFactory.createList(
+                  filteredFolders[index], context, image, name, false),
             ),
           ),
         ),

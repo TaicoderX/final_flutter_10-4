@@ -1,3 +1,5 @@
+import 'package:dynamic_multi_step_form/dynamic_json_form.dart';
+import 'package:dynamic_multi_step_form/parts.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
@@ -23,33 +25,12 @@ class _FlashcardsViewState extends State<FlashcardsView> {
   List<dynamic> flashcards = [];
   String topicId = "";
 
-  String selectedFont = 'Term';
   bool shuffle = false;
   bool playAudio = false;
-
-  // void updateSettings(bool newShuffle, bool newPlayAudio, String newSelectedFont) {
-  //   setState(() {
-  //     shuffle = newShuffle;
-  //     playAudio = newPlayAudio;
-  //     selectedFont = newSelectedFont;
-  //     if(shuffle) {
-  //       flashcards.shuffle();
-  //     }
-  //     if(selectedFont == 'Term') {
-  //       flashcards.forEach((element) {
-  //         final temp = element['englishWord'];
-  //         element['englishWord'] = element['vietnameseWord'];
-  //         element['vietnameseWord'] = temp;
-  //       });
-  //     } else {
-  //       flashcards.forEach((element) {
-  //         final temp = element['englishWord'];
-  //         element['englishWord'] = element['vietnameseWord'];
-  //         element['vietnameseWord'] = temp;
-  //       });
-  //     }
-  //   });
-  // }
+  bool isSpacedRepetition = true;
+  bool isTerm = true;
+  bool isSorting = false;
+  bool currentTermIsEnglish = true;
 
   @override
   void initState() {
@@ -77,7 +58,8 @@ class _FlashcardsViewState extends State<FlashcardsView> {
   }
 
   void _nextCard() {
-    if (!showFront) controllerFlipCard.toggleCardWithoutAnimation();
+    if (!showFront)
+      controllerFlipCard.toggleCardWithoutAnimation();
     if (currentIndex + 1 == flashcards.length) {
       Navigator.pushNamed(context, CongratsScreen.routeName);
     }
@@ -87,6 +69,12 @@ class _FlashcardsViewState extends State<FlashcardsView> {
       cardPosition = Offset.zero;
       cardRotation = 0.0;
     });
+    if (playAudio && !isVolumeOn && !_autoplayInProgress) {
+      String text = isTerm
+          ? flashcards[currentIndex]['englishWord']
+          : flashcards[currentIndex]['vietnameseWord'];
+      _speak(text, isTerm);
+    }
   }
 
   void _previousCard() {
@@ -111,38 +99,49 @@ class _FlashcardsViewState extends State<FlashcardsView> {
     });
   }
 
-  Future<void> _startAutoplay() async {
+  void _startAutoplay() async {
+    if(!isTerm) controllerFlipCard.toggleCard();
     if (_autoplayInProgress) return;
     _autoplayInProgress = true;
-    if (!showFront) {
-      _nextCard();
-    }
-    while (_autoplayInProgress && currentIndex < flashcards.length) {
-      await _speak(flashcards[currentIndex]['englishWord']!, true);
+    try {
+      if (!showFront) _nextCard();
+      while (
+          _autoplayInProgress && currentIndex < flashcards.length && mounted) {
+        await _speak(flashcards[currentIndex]['englishWord']!, true);
 
-      await Future.delayed(Duration(milliseconds: 500));
+        if (isSpacedRepetition && _autoplayInProgress)
+          await Future.delayed(Duration(milliseconds: 500));
+        if (!mounted) break;
+        controllerFlipCard.toggleCard();
+        if (!mounted) break;
+        setState(() {
+          showFront = false;
+        });
 
-      controllerFlipCard.toggleCard();
-      setState(() {
-        showFront = false;
-      });
+        if (isSpacedRepetition && _autoplayInProgress)
+          await Future.delayed(Duration(milliseconds: 500));
+        await _speak(flashcards[currentIndex]['vietnameseWord']!, false);
 
-      await Future.delayed(Duration(milliseconds: 500));
-
-      await _speak(flashcards[currentIndex]['vietnameseWord']!, false);
-
-      await Future.delayed(Duration(milliseconds: 500));
-
-      await Future.delayed(Duration(milliseconds: 500));
-      if (currentIndex + 1 < flashcards.length) {
-        _nextCard();
-      } else {
+        if (isSpacedRepetition && _autoplayInProgress)
+          await Future.delayed(Duration(milliseconds: 1000));
+        if (currentIndex + 1 < flashcards.length && mounted) {
+          _nextCard();
+        } else {
+          if (mounted) {
+            setState(() {
+              _autoplayInProgress = false;
+              currentIndex = 0;
+              controllerFlipCard.toggleCardWithoutAnimation();
+            });
+          }
+          Navigator.pushNamed(context, CongratsScreen.routeName);
+        }
+      }
+    } catch (e) {
+      if (mounted) {
         setState(() {
           _autoplayInProgress = false;
-          currentIndex = 0;
-          controllerFlipCard.toggleCardWithoutAnimation();
         });
-        Navigator.pushNamed(context, CongratsScreen.routeName);
       }
     }
   }
@@ -214,10 +213,12 @@ class _FlashcardsViewState extends State<FlashcardsView> {
                       child: FlipCard(
                         direction: FlipDirection.HORIZONTAL,
                         onFlip: () => _flipCard(),
-                        front: buildFlashCard(
-                            flashcards[currentIndex]['englishWord']!, true),
-                        back: buildFlashCard(
-                            flashcards[currentIndex]['vietnameseWord']!, false),
+                        front: isTerm ? buildFlashCard(
+                            flashcards[currentIndex]['englishWord']!, true) : buildFlashCard(
+                              flashcards[currentIndex]['vietnameseWord']!, false),
+                        back: isTerm ? buildFlashCard(
+                            flashcards[currentIndex]['vietnameseWord']!, false) : buildFlashCard(
+                              flashcards[currentIndex]['englishWord']!, true),
                         controller: controllerFlipCard,
                       ),
                     ),
@@ -342,98 +343,241 @@ class _FlashcardsViewState extends State<FlashcardsView> {
     );
   }
 
-  Future bottomSheet() {
+  Future<void> bottomSheet() {
     return showModalBottomSheet(
       context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return Container(
-              padding: EdgeInsets.only(
-                  top: 24.0, left: 16.0, right: 16.0, bottom: 16.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Text(
-                    'Options',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24.0,
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  SwitchListTile(
-                    title: Text('Shuffle'),
-                    value: shuffle,
-                    onChanged: (bool value) {
-                      setState(() {
-                        shuffle = value;
-                      });
-                    },
-                    secondary: Icon(Icons.shuffle),
-                  ),
-                  SwitchListTile(
-                    title: Text('Play audio'),
-                    value: playAudio,
-                    onChanged: (bool value) {
-                      setState(() {
-                        playAudio = value;
-                      });
-                    },
-                    secondary: Icon(Icons.audiotrack),
-                  ),
-                  SizedBox(height: 20),
-                  Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Icon(Icons.font_download_rounded),
-                        Text(
-                          'Font: ',
-                          style: TextStyle(fontSize: 20),
-                        ),
-                        SizedBox(
-                          width: 20,
-                        ),
-                        DropdownButton<String>(
-                          value: selectedFont,
-                          onChanged: (String? newValue) {
-                            // Update the selectedFont when dropdown value changes
-                            if (newValue != null) {
-                              setState(() {
-                                selectedFont = newValue;
-                              });
-                            }
-                          },
-                          items: <String>['Term', 'Definition']
-                              .map((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    child: Text('Restart Flashcards'),
-                    onPressed: () {
-                      setState(() {
-                        shuffle = false;
-                        playAudio = false;
-                        selectedFont = 'Term';
-                      });
-                      Navigator.pop(context);
-                    },
-                  ),
-                ],
+      isScrollControlled: true,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => FractionallySizedBox(
+          heightFactor: 1,
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: const BoxDecoration(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(30),
+                topRight: Radius.circular(30),
               ),
-            );
-          },
-        );
-      },
+              color: Color.fromARGB(255, 47, 50, 92),
+            ),
+            child: ListView(
+              children: [
+                SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.close, color: Colors.white),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                    SizedBox(width: MediaQuery.of(context).size.width * 0.25),
+                    const Text(
+                      "Options",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                const Divider(),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    InkWell(
+                      onTap: () => setState(() {
+                        shuffle = !shuffle;
+                        if (shuffle) {
+                          flashcards.shuffle();
+                        }
+                      }),
+                      child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                              color: Colors.black,
+                              borderRadius: BorderRadius.circular(50),
+                              border:
+                                  Border.all(color: Colors.white, width: 2.0)),
+                          child: Icon(
+                            Icons.shuffle,
+                            color: shuffle ? Colors.blue : Colors.white,
+                            size: 30,
+                          )),
+                    ),
+                    InkWell(
+                      onTap: () => setState(() {
+                        playAudio = !playAudio;
+                      }),
+                      child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                              color: Colors.black,
+                              borderRadius: BorderRadius.circular(50),
+                              border:
+                                  Border.all(color: Colors.white, width: 2.0)),
+                          child: Column(
+                            children: [
+                              Icon(Icons.volume_up,
+                                  color: playAudio ? Colors.blue : Colors.white,
+                                  size: 30),
+                            ],
+                          )),
+                    )
+                  ],
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text(
+                      '   Shuffle',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    Text(
+                      '  Play audio',
+                      style: TextStyle(color: Colors.white),
+                    )
+                  ],
+                ),
+                SizedBox(
+                  height: 30,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Auto-play delay',
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold)),
+                    Switch(
+                      value: isSpacedRepetition,
+                      onChanged: (value) {
+                        setState(() {
+                          isSpacedRepetition = !isSpacedRepetition;
+                        });
+                      },
+                      activeColor: Colors.blue,
+                    ),
+                  ],
+                ),
+                const Text(
+                  "There are delays between words when the Auto-play feature is enabled",
+                  style: TextStyle(
+                    color: Colors.grey,
+                  ),
+                ),
+                const SizedBox(height: 30.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Sorting',
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold)),
+                    Switch(
+                      value: isSorting,
+                      onChanged: (bool value) {
+                        setState(() {
+                          isSorting = value;
+                          if (isSorting) {
+                            flashcards.sort((a, b) => a['englishWord']
+                                .length
+                                .compareTo(b['englishWord'].length));
+                          }
+                        });
+                      },
+                      activeColor: Colors.blue,
+                    ),
+                  ],
+                ),
+                const Text(
+                  "Sort your cards word count to make it easier to study",
+                  style: TextStyle(
+                    color: Colors.grey,
+                  ),
+                ),
+                const SizedBox(height: 30.0),
+                const Text(
+                  "Card orientation",
+                  style: TextStyle(color: Colors.white),
+                ),
+                const SizedBox(height: 10.0),
+                const Text(
+                  "Front",
+                  style: TextStyle(
+                    color: Colors.grey,
+                  ),
+                ),
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    color: const Color.fromARGB(255, 72, 71, 71),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Expanded(
+                        flex: 1,
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                            foregroundColor:
+                                isTerm ? Colors.white : Colors.grey,
+                            backgroundColor: isTerm
+                                ? Colors.grey
+                                : const Color.fromARGB(255, 72, 71, 71),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              isTerm = true;
+                            });
+                          },
+                          child: Text('Term'),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                            foregroundColor:
+                                !isTerm ? Colors.white : Colors.grey,
+                            backgroundColor: !isTerm
+                                ? Colors.grey
+                                : const Color.fromARGB(255, 72, 71, 71),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              isTerm = false;
+                            });
+                          },
+                          child: Text('Definition'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Restart Flashcards",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

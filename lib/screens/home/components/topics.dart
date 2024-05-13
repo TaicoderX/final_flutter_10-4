@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shop_app/controllers/user.controller.dart';
 import 'package:shop_app/screens/folders/components/topic_factory.dart';
 import 'package:shop_app/screens/home/components/new_user.dart';
+import 'package:shop_app/screens/library/library_screen.dart';
 import 'package:shop_app/screens/local/local_storage.dart';
 
 import 'section_title.dart';
@@ -103,7 +104,15 @@ class _TopicsState extends State<Topics> {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: SectionTitle(title: "Sets", press: () {}),
+          child: SectionTitle(title: "Sets", press: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      LibraryScreen(initialTabIndex: 0),
+                ),
+              );
+          }),
         ),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,

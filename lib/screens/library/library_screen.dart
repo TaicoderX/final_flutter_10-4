@@ -7,7 +7,9 @@ import '../folders/new_folder_screen.dart';
 
 class LibraryScreen extends StatefulWidget {
   static String routeName = "/library";
-  const LibraryScreen({Key? key}) : super(key: key);
+  final int initialTabIndex;
+
+  const LibraryScreen({Key? key, this.initialTabIndex = 0}) : super(key: key);
 
   @override
   _LibraryScreenState createState() => _LibraryScreenState();
@@ -21,6 +23,7 @@ class _LibraryScreenState extends State<LibraryScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _tabController.index = widget.initialTabIndex;
   }
 
   @override
