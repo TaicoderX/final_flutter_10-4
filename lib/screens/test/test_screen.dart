@@ -117,7 +117,7 @@ class _GameScreenState extends State<GameScreen> {
       results.add({
         'vietnameseWord': _vocabularies[_currentIndex]['vietnameseWord'],
         'englishWord': correctAnswer,
-        'userAnswer': answer
+        'userAnswer': answer.replaceAll("_", "")
       });
     }
 
@@ -134,6 +134,7 @@ class _GameScreenState extends State<GameScreen> {
         'wrongAnswer': results.length,
         'vocabularies': _vocabularies,
         'topicId': _vocabularies[0]['topicId'],
+        'results': results,
       });
     }
   }

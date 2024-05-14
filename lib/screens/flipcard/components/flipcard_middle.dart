@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shop_app/screens/flashcard/flashcard_screen.dart';
 import 'package:shop_app/screens/quiz/components/options.dart';
 import 'package:shop_app/screens/ranking/ranking_screen.dart';
+import 'package:shop_app/screens/statistic_screen/statistic_screen.dart';
 import 'package:shop_app/screens/test/test_screen.dart';
 
 class Middle extends StatefulWidget {
@@ -77,10 +78,14 @@ class _MiddleState extends State<Middle> {
               );
             }),
             buildListTile(Icons.tornado_sharp, 'Ranking', const Color(0xFF3F56FF), onTap: () {
-              Navigator.pushNamed(context, Ranking.routeName);
+              Navigator.pushNamed(context, Ranking.routeName, arguments: {
+                "topicId": widget.topicId,
+              });
             },),
              buildListTile(Icons.percent_rounded, 'Statistic', const Color(0xFF3F56FF), onTap: () {
-              
+              Navigator.pushNamed(context, StatisticScreen.routeName, arguments: {
+                "topicId": widget.topicId,
+              });
             },),
           ],
         ),

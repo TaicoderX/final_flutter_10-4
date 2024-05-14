@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:shop_app/components/achivement_card.dart';
+import 'package:shop_app/controllers/bookmarkVocab.dart';
 import 'package:shop_app/models/Achievement.dart';
 import 'package:shop_app/screens/achievements/components/achievement.dart';
 
@@ -23,7 +24,7 @@ class _AchievementScreenState extends State<AchievementScreen> {
   }
 
   Future<void> loadAchievements() async {
-    getAllAchievement().then((achievementsMap) {
+    getAllAchievements().then((achievementsMap) {
       var achievementsList = achievementsMap['achievements'] as List<dynamic>;
       List<Achievement> loadedAchievements =
           achievementsList.map((achievementJson) {

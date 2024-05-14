@@ -14,6 +14,7 @@ class StatisticTest extends StatelessWidget {
     int wrongAnswer = args['wrongAnswer'];
     List<dynamic> vocabularies = args['vocabularies'];
     String topicId = args['topicId'];
+    List<dynamic> results = args['results'];
     int correctAnswers = totalQuestions - wrongAnswer;
     double correctPercentage = (correctAnswers / totalQuestions) * 100;
 
@@ -37,7 +38,6 @@ class StatisticTest extends StatelessWidget {
         child: SingleChildScrollView(
           child: Container(
             padding: EdgeInsets.all(20),
-            height: MediaQuery.of(context).size.height,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,7 +56,9 @@ class StatisticTest extends StatelessWidget {
                       ),
                       SizedBox(height: 20.0),
                       Text(
-                        correctPercentage < 50 ? "Practice with the topic terms until you've gotten them right." : "You're doing great! Keep up the good work.",
+                        correctPercentage < 50
+                            ? "Practice with the topic terms until you've gotten them right."
+                            : "You're doing great! Keep up the good work.",
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: 22.0,
@@ -223,19 +225,85 @@ class StatisticTest extends StatelessWidget {
                           ],
                         ),
                       ),
+                      for (var result in results)
+                        _createBoxIncorrect(
+                            result['vietnameseWord'], result['englishWord'], result['userAnswer']),
                     ],
                   ),
-                ),
-                Expanded(
-                  child: Container(
-                      // Nội dung câu trả lời của bạn
-                      ),
                 ),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _createBoxIncorrect(
+      String question, String correctAns, String answer) {
+    return Column(
+      children: [
+        SizedBox(height: 20,),
+        Container(
+          padding: EdgeInsets.all(10),
+          decoration: const BoxDecoration(
+            color: Color.fromARGB(255, 72, 71, 71),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Text(
+                  question,
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                  softWrap: true,
+                  overflow: TextOverflow.visible,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Expanded(
+                    child: Text(
+                      correctAns,
+                      style: TextStyle(color: Colors.green, fontSize: 20),
+                      softWrap: true,
+                      overflow: TextOverflow.visible,
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Center(
+                      child: Text(
+                        answer == "" ? "No answer" : answer,
+                        softWrap: true,
+                        style: TextStyle(color: Colors.red, fontSize: 20),
+                        overflow: TextOverflow.visible,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 30),
+              Container(
+                padding: EdgeInsets.all(10),
+                color: Colors.red,
+                width: double.infinity,
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Icon(Icons.close, color: Colors.white),
+                    Text('Incorrect',
+                        style: TextStyle(color: Colors.white, fontSize: 20)),
+                    SizedBox(width: 20),
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

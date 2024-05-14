@@ -1,4 +1,3 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
@@ -17,8 +16,8 @@ import 'components/flipcard_middle.dart';
 import 'dart:io';
 import 'package:csv/csv.dart';
 import 'package:excel/excel.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:external_path/external_path.dart';
 
 class FlipCardScreen extends StatefulWidget {
   static const String routeName = "/flipcards";
@@ -241,7 +240,7 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
                     icon: Icons.file_download,
                     onTap: () async {
                       Navigator.pop(context);
-                      _showExportDialog(context);
+                      _exportFile(context);
                     },
                   ),
                   const Divider(),
@@ -411,7 +410,45 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
     );
   }
 
-  Future<void> _showExportDialog(BuildContext context) async {
+  // Future<void> _showExportDialog(BuildContext context) async {
+  //   if (topics['vocabularies'] == null || topics['vocabularies'].isEmpty) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(
+  //         content: Text('There is no data to export.'),
+  //       ),
+  //     );
+  //     return;
+  //   }
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) {
+  //       return AlertDialog(
+  //         title: const Text("Export Options"),
+  //         content: Column(
+  //           mainAxisSize: MainAxisSize.min,
+  //           children: [
+  //             ListTile(
+  //               title: const Text("Export as CSV"),
+  //               onTap: () {
+  //                 Navigator.pop(context);
+  //                 _exportFile(context, "csv");
+  //               },
+  //             ),
+  //             ListTile(
+  //               title: const Text("Export as Excel"),
+  //               onTap: () {
+  //                 Navigator.pop(context);
+  //                 _exportFile(context, "excel");
+  //               },
+  //             ),
+  //           ],
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
+
+  void _exportFile(BuildContext context) async {
     if (topics['vocabularies'] == null || topics['vocabularies'].isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -420,116 +457,22 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
       );
       return;
     }
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text("Export Options"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                title: const Text("Export as CSV"),
-                onTap: () {
-                  Navigator.pop(context);
-                  _exportFile(context, "csv");
-                },
-              ),
-              ListTile(
-                title: const Text("Export as Excel"),
-                onTap: () {
-                  Navigator.pop(context);
-                  _exportFile(context, "excel");
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+    List<List<dynamic>> rows = [];
 
-  void _exportFile(BuildContext context, String format) async {
-    if (topics['vocabularies'] == null || topics['vocabularies'].isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('There is no data to export.')),
-      );
-      return;
+    for (int i = 0; i < topics['vocabularies'].length; i++) {
+      List<dynamic> row = [];
+      row.add(topics['vocabularies'][i]['englishWord']);
+      row.add(topics['vocabularies'][i]['vietnameseWord']);
+      rows.add(row);
     }
+    String csv = const ListToCsvConverter().convert(rows);
 
-    try {
-      String? outputFile = await _pickSaveLocation(format);
-      if (outputFile == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('File location not selected.')),
-        );
-        return;
-      }
+    String dir = await ExternalPath.getExternalStoragePublicDirectory(
+        ExternalPath.DIRECTORY_DOWNLOADS);
+    String file = "$dir";
 
-      if (format == "csv") {
-        await _exportToCSV(outputFile);
-      } else if (format == "excel") {
-        await _exportToExcel(outputFile);
-      }
+    File f = File(file + "/TNN-App.csv");
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('File exported successfully!')),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Export failed: $e')),
-      );
-    }
-  }
-
-  Future<String?> _pickSaveLocation(String format) async {
-    try {
-      String? outputFile = await FilePicker.platform.saveFile(
-        dialogTitle: 'Please select an output file:',
-        fileName: 'vocabularies_export.$format',
-        type: FileType.custom,
-        allowedExtensions: [format],
-      );
-      return outputFile;
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error picking file location: $e')),
-      );
-      return null;
-    }
-  }
-
-  Future<void> _exportToCSV(String path) async {
-    try {
-      List<List<dynamic>> csvData = topics['vocabularies']
-          .map<List<dynamic>>(
-              (vocab) => [vocab['englishWord'], vocab['vietnameseWord']])
-          .toList();
-
-      String csv = const ListToCsvConverter().convert(csvData);
-      await File(path).writeAsString(csv);
-    } catch (e) {
-      throw Exception('Failed to export to CSV: $e');
-    }
-  }
-
-  Future<void> _exportToExcel(String path) async {
-    try {
-      var excel = Excel.createExcel();
-      Sheet sheet = excel[excel.getDefaultSheet()!];
-
-      topics['vocabularies'].forEach((vocab) {
-        sheet.appendRow([vocab['englishWord'], vocab['vietnameseWord']]);
-      });
-
-      List<int>? fileBytes = excel.save();
-      if (fileBytes != null) {
-        await File(path).writeAsBytes(fileBytes);
-      } else {
-        throw Exception('Failed to generate Excel file bytes');
-      }
-    } catch (e) {
-      throw Exception('Failed to export to Excel: $e');
-    }
+    f.writeAsString(csv);
   }
 }

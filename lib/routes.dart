@@ -19,6 +19,7 @@ import 'package:shop_app/screens/quiz/components/options.dart';
 import 'package:shop_app/screens/quiz/components/statistic.dart';
 import 'package:shop_app/screens/quiz/quiz_page_screen.dart';
 import 'package:shop_app/screens/ranking/ranking_screen.dart';
+import 'package:shop_app/screens/statistic_screen/statistic_screen.dart';
 import 'package:shop_app/screens/studyset/studyset_screen.dart';
 import 'package:shop_app/screens/test/components/statistic.dart';
 import 'package:shop_app/screens/test/test_screen.dart';
@@ -65,5 +66,6 @@ final Map<String, WidgetBuilder> routes = {
   Ranking.routeName: (context) => Ranking(),
   Statistic.routeName: (context) => Statistic(),
   StatisticTest.routeName: (context) => StatisticTest(),
+  StatisticScreen.routeName: (context) => StatisticScreen(),
   Options.routeName: (context) => Options(),
 };

@@ -6,8 +6,8 @@ import '../constants.dart';
 class AchievementCard extends StatelessWidget {
   const AchievementCard({
     Key? key,
-    this.width = 140,
-    this.aspectRetio = 1.02,
+    this.width = 141,
+    this.aspectRetio = 1.01,
     required this.achievement,
     required this.onPress,
   }) : super(key: key);
@@ -32,19 +32,12 @@ class AchievementCard extends StatelessWidget {
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: kSecondaryColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                child: Image.network(achievement.images[0]),
+                // child: Image.network(achievement.images[0]),
               ),
             ),
             const SizedBox(height: 8),
-            // Text(
-            //   achievement.description,
-            //   style: Theme.of(context).textTheme.bodyMedium,
-            //   textAlign: TextAlign.center,
-            //   maxLines: 2,
-            //   overflow: TextOverflow.ellipsis,
-            // ),
             Center(
               child: Text(
                 "${achievement.name}",

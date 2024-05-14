@@ -1,5 +1,6 @@
 // String IP = "52.221.210.100";
 String IP = "192.168.10.33";
+
 String baseUrl = "http://$IP:3001/android";
 
 String users = baseUrl + "/users";
@@ -51,6 +52,7 @@ String deleteBookmarkVocabUrl = bookmarkVocab + "/vocabularies/";
 
 // learning statistic
 String learningStatistic = baseUrl + "/learningStatistics";
+String getStatisticByTopicIdUrl = learningStatistic + "/topic/";
 
 // get process learning
 String getProcessLearning = learningStatistic + "/topic/:topicId/progress";
@@ -61,8 +63,11 @@ String learningOfUserInTopic = learningStatistic + "/topic/:topicId";
 // get user learning statistics for topic
 String learningStatisticForUser = learningStatistic + "/topic/:topicId/user/:userId";
 
-
 // achievement
 String achievement = baseUrl + "/achievements";
-String getAchievementByUser = achievement;
+String getAllAchie = achievement;
 String createAchievement = achievement;
+
+// vocabularyStatistics
+String vocabularyStatistics = baseUrl + "/vocabularyStatistics";
+String getVocabularyStatisticByTopicIdUrl = vocabularyStatistics + "/topics/";

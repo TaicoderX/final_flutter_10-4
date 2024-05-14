@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'config.dart';
 
-Future<Map<String, dynamic>> getFolderByID(String id, String token) async {
+Future<Map<String, dynamic>> getStatisticByTopicId(String topicId, String token) async {
   var response = await http.get(
-    Uri.parse(getFolderByUser + id),
+    Uri.parse(getStatisticByTopicIdUrl + topicId),
     headers: {
       'token': '$token',
     },
