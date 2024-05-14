@@ -20,6 +20,7 @@ import 'package:shop_app/screens/quiz/components/statistic.dart';
 import 'package:shop_app/screens/quiz/quiz_page_screen.dart';
 import 'package:shop_app/screens/ranking/ranking_screen.dart';
 import 'package:shop_app/screens/studyset/studyset_screen.dart';
+import 'package:shop_app/screens/test/components/statistic.dart';
 import 'package:shop_app/screens/test/test_screen.dart';
 
 import 'screens/forgot_password/forgot_password_screen.dart';
@@ -48,20 +49,21 @@ final Map<String, WidgetBuilder> routes = {
   FlipCardScreen.routeName: (context) => const FlipCardScreen(),
   FolderScreen.routeName: (context) => const FolderScreen(),
   LibraryScreen.routeName: (context) => const LibraryScreen(),
-  AchievementScreen.routeName:(context) => const AchievementScreen(),
-  DiscoverScreen.routeName:(context) => const DiscoverScreen(),
-  StudySetScreen.routeName:(context) => StudySetScreen(),
-  NewFolderScreen.routeName:(context) => NewFolderScreen(),
-  EditTopic.routeName:(context) => EditTopic(),
-  CloneTopic.routeName:(context) => CloneTopic(),
-  EditFolder.routeName:(context) => EditFolder(),
-  FlashcardsView.routeName:(context) => FlashcardsView(),
-  CongratsScreen.routeName:(context) => CongratsScreen(),
-  QuizPage.routeName:(context) => QuizPage(),
-  AddTopicToFolder.routeName:(context) => AddTopicToFolder(),
-  ChooseFolderToGetTopic.routeName:(context) => ChooseFolderToGetTopic(),
-  GameScreen.routeName:(context) => GameScreen(),
-  Ranking.routeName:(context) => Ranking(),
-  Statistic.routeName:(context) => Statistic(),
-  Options.routeName:(context) => Options(),
+  AchievementScreen.routeName: (context) => const AchievementScreen(),
+  DiscoverScreen.routeName: (context) => const DiscoverScreen(),
+  StudySetScreen.routeName: (context) => StudySetScreen(),
+  NewFolderScreen.routeName: (context) => NewFolderScreen(),
+  EditTopic.routeName: (context) => EditTopic(),
+  CloneTopic.routeName: (context) => CloneTopic(),
+  EditFolder.routeName: (context) => EditFolder(),
+  FlashcardsView.routeName: (context) => FlashcardsView(),
+  CongratsScreen.routeName: (context) => CongratsScreen(),
+  QuizPage.routeName: (context) => QuizPage(),
+  AddTopicToFolder.routeName: (context) => AddTopicToFolder(),
+  ChooseFolderToGetTopic.routeName: (context) => ChooseFolderToGetTopic(),
+  GameScreen.routeName: (context) => GameScreen(),
+  Ranking.routeName: (context) => Ranking(),
+  Statistic.routeName: (context) => Statistic(),
+  StatisticTest.routeName: (context) => StatisticTest(),
+  Options.routeName: (context) => Options(),
 };

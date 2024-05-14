@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 class VocabularyItem {
-  String? id; // ID của từ vựng, nếu có
+  String? id;
   TextEditingController termController;
   TextEditingController definitionController;
-  String originalTerm; // Giá trị ban đầu của từ
-  String originalDefinition; // Giá trị ban đầu của nghĩa
+  String originalTerm;
+  String originalDefinition;
 
 
   VocabularyItem({

@@ -38,35 +38,22 @@ class _QuizPageState extends State<QuizPage> {
 
     final question = vocabularies[questionIndex];
 
-    // List<String> options = [question['vietnameseWord']];
-    // vocabularies.shuffle();
-    // options.addAll(vocabularies
-    //     .where((v) => v['vietnameseWord'] != question['vietnameseWord'])
-    //     .take(3)
-    //     .map((v) => v['vietnameseWord']));
-    // options.shuffle();
-
-    // return QuizData(
-    //   question: question['englishWord'],
-    //   options: options,
-    //   correctAnswer: question['vietnameseWord'],
-    // );
-
     String languageQuestion =
         language.toLowerCase() == 'english' ? "englishWord" : "vietnameseWord";
     String languageAnswer =
         language.toLowerCase() == 'english' ? "vietnameseWord" : "englishWord";
 
     List<String> options = [question[languageAnswer]];
-    vocabularies.shuffle();
+    
+    if (isShuffle) {
+      vocabularies.shuffle();
+    }
+
     options.addAll(vocabularies
         .where((v) => v[languageAnswer] != question[languageAnswer])
         .take(3)
         .map((v) => v[languageAnswer]));
-
-    if (isShuffle) {
-      options.shuffle();
-    }
+    options.shuffle();
 
     return QuizData(
       question: question[languageQuestion],
@@ -91,8 +78,7 @@ class _QuizPageState extends State<QuizPage> {
       isShuffle = args['shuffle'] ?? false;
       isFeedback = args['feedback'] ?? true;
       vocabularies = args['vocabularies'] ?? [];
-      allQuizData = List.generate(
-          maxQuestions, (_) => generateQuizData(args));
+      allQuizData = List.generate(maxQuestions, (_) => generateQuizData(args));
     }
   }
 
@@ -140,33 +126,32 @@ class _QuizPageState extends State<QuizPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Container(
-                        child: Icon(
-                          Icons.arrow_back,
-                          color: Colors.white,
-                        ),
-                        height: 30,
-                        width: 30,
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.indigo.shade500),
-                      )),
-                  Text(
-                    'Live Quiz',
-                    style: TextStyle(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      child: Icon(
+                        Icons.arrow_back,
                         color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(
-                      Icons.person_pin_rounded,
-                      color: Colors.pinkAccent.shade100,
+                      ),
+                      height: 30,
+                      width: 30,
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.indigo.shade500),
                     ),
+                  ),
+                  Center(
+                    child: Text(
+                      'Learn by Quiz',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 50,
                   ),
                 ],
               ),

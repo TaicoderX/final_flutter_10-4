@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shop_app/models/Achievement.dart';
-
-import '../../../constants.dart';
 
 class AchievementDescription extends StatelessWidget {
   const AchievementDescription({
@@ -26,26 +23,6 @@ class AchievementDescription extends StatelessWidget {
             style: Theme.of(context).textTheme.titleLarge,
           ),
         ),
-        Align(
-          alignment: Alignment.centerRight,
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            width: 48,
-            decoration: BoxDecoration(
-              color: const Color(0xFFFFE6E6),
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(20),
-                bottomLeft: Radius.circular(20),
-              ),
-            ),
-            child: SvgPicture.asset(
-              "assets/icons/Heart Icon_2.svg",
-              colorFilter:
-                  ColorFilter.mode(const Color(0xFFFF4848), BlendMode.srcIn),
-              height: 16,
-            ),
-          ),
-        ),
         Padding(
           padding: const EdgeInsets.only(
             left: 20,
@@ -60,24 +37,6 @@ class AchievementDescription extends StatelessWidget {
           padding: const EdgeInsets.symmetric(
             horizontal: 20,
             vertical: 12,
-          ),
-          child: GestureDetector(
-            onTap: () {},
-            child: const Row(
-              children: [
-                Text(
-                  "See More Detail",
-                  style: TextStyle(
-                      fontWeight: FontWeight.w600, color: kPrimaryColor),
-                ),
-                SizedBox(width: 5),
-                Icon(
-                  Icons.arrow_forward_ios,
-                  size: 12,
-                  color: kPrimaryColor,
-                ),
-              ],
-            ),
           ),
         )
       ],

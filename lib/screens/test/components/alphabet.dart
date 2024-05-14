@@ -1,3 +1,3 @@
 class Alphabet {
-  String alphabet = 'abcdefghijklmnopqrstuvwxyz❌✔️';
+  String alphabet = 'qwertyuiopasdfghjklzxcvbnm❌✔️';
 }

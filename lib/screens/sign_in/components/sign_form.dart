@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -191,66 +189,11 @@ class _SignFormState extends State<SignForm> {
                   ),
                 ),
               ),
-              Expanded(
-                flex: 1,
-                child: GestureDetector(
-                  onTap: () async {
-                    var prefs = await SharedPreferences.getInstance();
-                    var token = prefs.getString('token') ?? '';
-                    if (token.isEmpty) {
-                      QuickAlert.show(
-                        context: context,
-                        type: QuickAlertType.info,
-                        text: 'Please login first',
-                      );
-                      return;
-                    }
-                    _authenticateWithBiometrics(context);
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.only(left: 15),
-                    padding: const EdgeInsets.all(12),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFFF7642),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Image.asset(
-                      "assets/images/fingerprint.png",
-                      width: 30,
-                      height: 30,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
+              
             ],
           ),
         ],
       ),
     );
-  }
-
-  Future<void> _authenticateWithBiometrics(BuildContext context) async {
-    final LocalAuthentication auth = LocalAuthentication();
-    bool isAuthenticated = false;
-
-    try {
-      isAuthenticated = await auth.authenticate(
-        localizedReason: 'Scan your fingerprint to authenticate',
-        options: const AuthenticationOptions(
-          biometricOnly: true,
-        ),
-      );
-    } on Exception catch (e) {}
-
-    if (isAuthenticated) {
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token') ?? '';
-      print(token);
-      // Navigator.pushReplacement(
-      //   context,
-      //   MaterialPageRoute(builder: (context) => HomePage(userId: userId)),
-      // );
-    }
   }
 }

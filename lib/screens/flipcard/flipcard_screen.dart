@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shop_app/controllers/bookmarkVocab.dart';
 import 'package:shop_app/controllers/topic.dart';
 import 'package:shop_app/controllers/user.controller.dart';
 import 'package:shop_app/screens/add_folder/choose_folder_get_topic.dart';
@@ -62,12 +63,27 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
       return;
     }
     try {
-      var value = await getVocabularyByTopicId(topicId, token);
-      // if(!isStudyAll){
-      //   value
-      // }
-      if (value != null) {
-        _updateTopics(value);
+      if (!isStudyAll) {
+        var getBM = await getBMVocabByTopicId(token, topicId);
+        if (getBM['bookmarkedVocabularies'].isNotEmpty) {
+          setState(() {
+            topics['vocabularies'] = getBM['bookmarkedVocabularies'];
+          });
+        } else {
+          isStudyAll = true;
+          const snackBar = SnackBar(
+            content: Text("No bookmarked vocabularies found. Showing all."),
+            duration: Duration(seconds: 2),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+      }
+      if (isStudyAll) {
+        var value = await getVocabularyByTopicId(topicId, token);
+
+        if (value != null) {
+          _updateTopics(value);
+        }
       } else {
         print('API returned null value.');
       }
@@ -139,6 +155,7 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
                             setState(() {
                               isStudyAll = true;
                             });
+                            _loadTopics();
                           },
                           child: Text('Study All'),
                         ),
@@ -157,6 +174,7 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
                             setState(() {
                               isStudyAll = false;
                             });
+                            _loadTopics();
                           },
                           child: Text('Study Bookmarks'),
                         ),

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/screens/flashcard/flashcard_screen.dart';
 import 'package:shop_app/screens/init_screen.dart';
-import 'package:shop_app/screens/quiz/quiz_page_screen.dart';
+import 'package:shop_app/screens/test/test_screen.dart';
 
-class Statistic extends StatelessWidget {
-  static const String routeName = '/statistic';
-  const Statistic({Key? key}) : super(key: key);
+class StatisticTest extends StatelessWidget {
+  static const String routeName = '/statistic-test';
+  const StatisticTest({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +46,9 @@ class Statistic extends StatelessWidget {
                   Expanded(
                     child: Column(children: [
                       Text(
-                        correctPercentage < 50 ? 'You need to study more! ' : 'Good job! ',
+                        correctPercentage < 50
+                            ? 'You need to study more! '
+                            : 'Good job! ',
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: 24.0,
@@ -197,14 +199,10 @@ class Statistic extends StatelessWidget {
                           Navigator.pop(context);
                           await Navigator.pushNamed(
                             context,
-                            QuizPage.routeName,
+                            GameScreen.routeName,
                             arguments: {
                               "vocabularies": args['vocabularies'],
                               "topicId": args['topicId'],
-                              "maxQuestions": args['maxQuestions'],
-                              "language": args['language'],
-                              'shuffle': args['shuffle'],
-                              'feedback': args['feedback'],
                             },
                           );
                         },

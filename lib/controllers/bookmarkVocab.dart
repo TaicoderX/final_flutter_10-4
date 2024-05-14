@@ -77,7 +77,23 @@ Future<Map<String, dynamic>> getAllBMVocab(String token) async {
 
 Future<Map<String, dynamic>> getBMByTopicId(String token, String topicId) async {
   var response = await http.get(
-    Uri.parse(getBookmarkVocabByTopic + topicId),
+    Uri.parse(getBookmarkByTopic + topicId),
+    headers: {
+      'token': '$token',
+    },
+  );
+
+  if (response.statusCode == 200 || response.statusCode != 500) {
+    return json.decode(response.body);
+  } else {
+    throw Exception(
+        'Failed to load topics: Server responded with ${response.statusCode}');
+  }
+}
+
+Future<Map<String, dynamic>> getBMVocabByTopicId(String token, String topicId) async {
+  var response = await http.get(
+    Uri.parse(getBookmarkVocabByTopic.replaceFirst(':topicId', topicId)),
     headers: {
       'token': '$token',
     },

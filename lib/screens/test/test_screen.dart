@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/screens/test/components/alphabet.dart';
+import 'package:shop_app/screens/test/components/statistic.dart';
 import 'package:shop_app/screens/test/components/word_button.dart';
 
 class GameScreen extends StatefulWidget {
@@ -128,7 +129,12 @@ class _GameScreenState extends State<GameScreen> {
         color = Colors.yellow;
       });
     } else {
-      // finishTest();
+      Navigator.pushNamed(context, StatisticTest.routeName, arguments: {
+        'totalQuestions': _vocabularies.length,
+        'wrongAnswer': results.length,
+        'vocabularies': _vocabularies,
+        'topicId': _vocabularies[0]['topicId'],
+      });
     }
   }
 

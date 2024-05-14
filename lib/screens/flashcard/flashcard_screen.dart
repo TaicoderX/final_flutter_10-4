@@ -3,6 +3,7 @@ import 'package:dynamic_multi_step_form/parts.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:shop_app/screens/flashcard/components/congrats_screen.dart';
 
@@ -563,15 +564,26 @@ class _FlashcardsViewState extends State<FlashcardsView> {
                 const SizedBox(
                   height: 20,
                 ),
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Restart Flashcards",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.white, fontSize: 20),
-                    ),
-                  ],
+                GestureDetector(
+                  onTap: () => {
+                    setState(() {
+                      shuffle = false;
+                      playAudio = false;
+                      isSpacedRepetition = true;
+                      isTerm = true;
+                      isSorting = false;
+                    })
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Restart Flashcards",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

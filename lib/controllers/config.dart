@@ -1,5 +1,5 @@
-String IP = "52.221.210.100";
-// String IP = "192.168.118.76";
+// String IP = "52.221.210.100";
+String IP = "192.168.10.33";
 String baseUrl = "http://$IP:3001/android";
 
 String users = baseUrl + "/users";
@@ -45,7 +45,8 @@ String bookmarkVocab = baseUrl + "/bookmarkVocabularies";
 
 String createBookmarkVocabUrl = bookmarkVocab;
 String getAllBookmarkVocabByUser = bookmarkVocab;
-String getBookmarkVocabByTopic = bookmarkVocab + "/topics/";
+String getBookmarkByTopic = bookmarkVocab + "/topics/";
+String getBookmarkVocabByTopic = bookmarkVocab + "/topics/:topicId/vocabs";
 String deleteBookmarkVocabUrl = bookmarkVocab + "/vocabularies/";
 
 // learning statistic

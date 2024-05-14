@@ -4,7 +4,6 @@ import 'package:shop_app/screens/details/components/achievement_description.dart
 import 'package:shop_app/screens/details/components/achievement_images.dart';
 import 'package:shop_app/screens/details/components/top_rounded_container.dart';
 
-
 class AchievementComponent extends StatelessWidget {
   static String routeName = "/achievement_details";
 
@@ -12,8 +11,9 @@ class AchievementComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AchievementDetailsArguments agrs =
-        ModalRoute.of(context)!.settings.arguments as AchievementDetailsArguments;
+    final AchievementDetailsArguments agrs = ModalRoute.of(context)!
+        .settings
+        .arguments as AchievementDetailsArguments;
     final achievement = agrs.achievement;
     return Scaffold(
       extendBody: true,
@@ -65,8 +65,9 @@ class AchievementComponent extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             child: ElevatedButton(
               onPressed: () {
+                Navigator.pop(context);
               },
-              child: const Text("Set as Avatar"),
+              child: const Text("Back"),
             ),
           ),
         ),

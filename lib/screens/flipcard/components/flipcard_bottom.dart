@@ -63,6 +63,7 @@ class _BottomState extends State<Bottom> {
       var res = await getBMByTopicId(token, widget.topicId);
       setState(() {
         _bookmarkedVocabularies = res['bookmarkedVocabIds'];
+        print(_bookmarkedVocabularies);
       });
     } catch (error) {
       print("Failed to load bookmarks: $error");

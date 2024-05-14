@@ -112,11 +112,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 },
               ),
               ProfileMenu(
-                text: "Settings",
-                icon: "assets/icons/Settings.svg",
-                press: () {},
-              ),
-              ProfileMenu(
                 text: "Log Out",
                 icon: "assets/icons/Log out.svg",
                 press: () async {
