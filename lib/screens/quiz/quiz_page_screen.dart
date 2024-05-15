@@ -1,7 +1,8 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:dynamic_multi_step_form/dynamic_json_form.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
-
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:shop_app/models/QuizData.dart';
 import 'package:shop_app/screens/quiz/components/quiz_option.dart';
 import 'package:shop_app/screens/quiz/components/statistic.dart';
@@ -23,7 +24,10 @@ class _QuizPageState extends State<QuizPage> {
   int maxQuestions = 0;
   bool isShuffle = false;
   bool isFeedback = false;
+  late FlutterTts flutterTts;
   var vocabularies;
+  List<Map<String, dynamic>> results = [];
+  String topicId = '';
 
   QuizData generateQuizData(Map<String, dynamic> args) {
     final vocabularies = List.from(args['vocabularies']);
@@ -44,7 +48,7 @@ class _QuizPageState extends State<QuizPage> {
         language.toLowerCase() == 'english' ? "vietnameseWord" : "englishWord";
 
     List<String> options = [question[languageAnswer]];
-    
+
     if (isShuffle) {
       vocabularies.shuffle();
     }
@@ -64,6 +68,7 @@ class _QuizPageState extends State<QuizPage> {
 
   @override
   void initState() {
+    flutterTts = FlutterTts();
     super.initState();
   }
 
@@ -78,31 +83,46 @@ class _QuizPageState extends State<QuizPage> {
       isShuffle = args['shuffle'] ?? false;
       isFeedback = args['feedback'] ?? true;
       vocabularies = args['vocabularies'] ?? [];
+      topicId = args['topicId'] ?? '';
       allQuizData = List.generate(maxQuestions, (_) => generateQuizData(args));
+      if (currentQuestionIndex == 0) {
+        _speak(allQuizData[currentQuestionIndex].question,
+            language.toLowerCase() == 'english');
+      }
     }
+  }
+
+  Future<void> _speak(String text, bool isEn) async {
+    await flutterTts.setLanguage(isEn ? "en-US" : "vi-VN");
+    await flutterTts.awaitSpeakCompletion(true);
+    await flutterTts.speak(text);
   }
 
   @override
   void dispose() {
     audioPlayer.dispose();
+    flutterTts.stop();
     super.dispose();
   }
 
-  void goToNextQuestion() {
+  void goToNextQuestion() async {
     if (currentQuestionIndex < allQuizData.length - 1) {
       setState(() {
         currentQuestionIndex++;
+        _speak(allQuizData[currentQuestionIndex].question,
+            language.toLowerCase() == 'english');
       });
     } else {
       Navigator.pushNamed(context, Statistic.routeName, arguments: {
         'totalQuestions': allQuizData.length,
         'wrongAnswer': wrongAnswer,
         'vocabularies': vocabularies,
-        'topicId': 'topicId',
+        'topicId': topicId,
         'language': language,
         'maxQuestions': maxQuestions,
         'shuffle': isShuffle,
         'feedback': isFeedback,
+        'results': results,
       });
     }
   }
@@ -212,6 +232,11 @@ class _QuizPageState extends State<QuizPage> {
                     color: Colors.indigo.shade500,
                     onTap: () {
                       if (quizData.options[index] == quizData.correctAnswer) {
+                        results.add({
+                          'vocabularyId': vocabularies[currentQuestionIndex]
+                              ['_id'],
+                          'learningCount': 1,
+                        });
                         correctDialog(context, quizData.correctAnswer);
                       } else {
                         wrongDialog(context, quizData.question,

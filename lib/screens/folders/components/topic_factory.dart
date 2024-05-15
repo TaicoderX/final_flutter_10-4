@@ -3,7 +3,7 @@ import 'package:shop_app/screens/flipcard/flipcard_screen.dart';
 import 'topic_in_folder.dart';
 
 class TopicWidgetFactory {
-  static Widget createWidget(Map<String, dynamic> topic, BuildContext context, bool isLarge, {bool isDiscover = false}) {
+  static Widget createWidget(Map<String, dynamic> topic, BuildContext context, bool isLarge, {bool isDiscover = false, bool isLibrary = false}) {
     String title = topic['topicNameEnglish'] ?? 'Title';
     String image = topic['ownerId']['profileImage'] ?? '';
     int words = topic['vocabularyCount'] ?? 0;
@@ -26,6 +26,7 @@ class TopicWidgetFactory {
             'username': name,
             'terms': words.toString(),
             'isDiscover': isDiscover,
+            'isLibrary' : isLibrary,
           },
         );
       },

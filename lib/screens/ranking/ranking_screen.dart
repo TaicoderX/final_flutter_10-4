@@ -139,7 +139,7 @@ class _RankingState extends State<Ranking> {
                     allStatistics[index]['learningCount'],
                     allStatistics[index]['vocabLearned'],
                     formatTime(allStatistics[index]['learningTime']),
-                    allStatistics[index]['learningPercentage'],
+                    allStatistics[index]['learningPercentage'] * 1.0,
                   );
                 },
               ),
@@ -204,7 +204,7 @@ class _RankingState extends State<Ranking> {
                         ),
                         SizedBox(height: 10),
                         Text(
-                          'Vocabularies Learned: $vocabulariesLearned',
+                          'Vocabularies Learned: ${int.parse(vocabulariesLearned.toString())}',
                           style: TextStyle(color: Colors.white, fontSize: 18),
                         ),
                         SizedBox(height: 10),
@@ -220,7 +220,7 @@ class _RankingState extends State<Ranking> {
                         width: 60,
                         height: 60,
                         child: CircularProgressIndicator(
-                          value: 0.54,
+                          value: percentLearned,
                           backgroundColor: Colors.orange,
                           valueColor: AlwaysStoppedAnimation<Color>(
                               Color.fromARGB(255, 120, 226, 123)),
@@ -228,7 +228,7 @@ class _RankingState extends State<Ranking> {
                         ),
                       ),
                       Text(
-                        '${percentLearned * 100}%',
+                        '${(percentLearned * 100).toStringAsFixed(1)}%',
                         style: TextStyle(fontSize: 16, color: Colors.white),
                       ),
                     ],

@@ -1,11 +1,57 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:shop_app/controllers/learningStatistic.dart';
+import 'package:shop_app/controllers/vocabStatistic.dart';
 import 'package:shop_app/screens/flashcard/flashcard_screen.dart';
 import 'package:shop_app/screens/init_screen.dart';
+import 'package:shop_app/screens/local/local_storage.dart';
 import 'package:shop_app/screens/quiz/quiz_page_screen.dart';
 
-class Statistic extends StatelessWidget {
+class Statistic extends StatefulWidget {
   static const String routeName = '/statistic';
   const Statistic({Key? key}) : super(key: key);
+
+  @override
+  State<Statistic> createState() => _StatisticState();
+}
+
+class _StatisticState extends State<Statistic> {
+  bool _isLoading = true;
+  bool _hasCalledAPI = false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (!_hasCalledAPI) {
+      final args =
+          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+      List<Map<String, dynamic>> results = args['results'];
+      String topicId = args['topicId'];
+      callAPIToUpdate(results, topicId);
+      _hasCalledAPI = true;
+    }
+  }
+
+  void callAPIToUpdate(
+      List<Map<String, dynamic>> results, String topicId) async {
+    String token = await LocalStorageService().getData('token');
+    await create_updateVocabStatistic(token, results);
+    int random = Random().nextInt(10) + 1;
+    await updateLearningStatistic(topicId, token, random * 60);
+
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,17 +66,20 @@ class Statistic extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 2, 10, 57),
-        leading: IconButton(
-          icon: const Icon(
-            Icons.close,
-            color: Colors.blue,
-            size: 40,
-          ),
-          onPressed: () {
-            Navigator.pushNamedAndRemoveUntil(
-                context, InitScreen.routeName, (route) => false);
-          },
-        ),
+        leading: !_isLoading
+            ? IconButton(
+                icon: const Icon(
+                  Icons.close,
+                  color: Colors.blue,
+                  size: 40,
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
+              )
+            : null,
       ),
       backgroundColor: const Color.fromARGB(255, 2, 10, 57),
       body: SafeArea(
@@ -46,7 +95,9 @@ class Statistic extends StatelessWidget {
                   Expanded(
                     child: Column(children: [
                       Text(
-                        correctPercentage < 50 ? 'You need to study more! ' : 'Good job! ',
+                        correctPercentage < 50
+                            ? 'You need to study more! '
+                            : 'Good job! ',
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: 24.0,
@@ -54,7 +105,9 @@ class Statistic extends StatelessWidget {
                       ),
                       SizedBox(height: 20.0),
                       Text(
-                        correctPercentage < 50 ? "Practice with the topic terms until you've gotten them right." : "You're doing great! Keep up the good work.",
+                        correctPercentage < 50
+                            ? "Practice with the topic terms until you've gotten them right."
+                            : "You're doing great! Keep up the good work.",
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: 22.0,
@@ -69,7 +122,6 @@ class Statistic extends StatelessWidget {
                     size: 150.0,
                   ),
                 ]),
-
                 const SizedBox(height: 20.0),
                 const Text(
                   'Your Result',
@@ -79,7 +131,6 @@ class Statistic extends StatelessWidget {
                       fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 20.0),
-
                 Row(
                   children: [
                     Stack(
@@ -122,7 +173,6 @@ class Statistic extends StatelessWidget {
                     ),
                   ],
                 ),
-
                 SizedBox(height: 20.0),
                 const Text(
                   'Next Steps',
@@ -175,11 +225,7 @@ class Statistic extends StatelessWidget {
                     ],
                   ),
                 ),
-
                 const SizedBox(height: 10.0),
-
-                //button try again
-
                 SizedBox(
                   width: double.infinity,
                   child: Column(
@@ -194,6 +240,7 @@ class Statistic extends StatelessWidget {
                           ),
                         ),
                         onPressed: () async {
+                          Navigator.pop(context);
                           Navigator.pop(context);
                           await Navigator.pushNamed(
                             context,

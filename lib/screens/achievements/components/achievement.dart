@@ -11,9 +11,8 @@ class AchievementComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AchievementDetailsArguments agrs = ModalRoute.of(context)!
-        .settings
-        .arguments as AchievementDetailsArguments;
+    final AchievementDetailsArguments agrs =
+        ModalRoute.of(context)!.settings.arguments as AchievementDetailsArguments;
     final achievement = agrs.achievement;
     return Scaffold(
       extendBody: true,
@@ -67,7 +66,7 @@ class AchievementComponent extends StatelessWidget {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text("Back"),
+              child: const Text("Back to Achievements"),
             ),
           ),
         ),

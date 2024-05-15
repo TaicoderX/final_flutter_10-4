@@ -53,6 +53,7 @@ String deleteBookmarkVocabUrl = bookmarkVocab + "/vocabularies/";
 // learning statistic
 String learningStatistic = baseUrl + "/learningStatistics";
 String getStatisticByTopicIdUrl = learningStatistic + "/topic/";
+String updateLearningStatisticUrl = learningStatistic + "/topic/:topicId/progress";
 
 // get process learning
 String getProcessLearning = learningStatistic + "/topic/:topicId/progress";
@@ -70,4 +71,5 @@ String createAchievement = achievement;
 
 // vocabularyStatistics
 String vocabularyStatistics = baseUrl + "/vocabularyStatistics";
+String create_updateVocabStatisticUrl = vocabularyStatistics;
 String getVocabularyStatisticByTopicIdUrl = vocabularyStatistics + "/topics/";

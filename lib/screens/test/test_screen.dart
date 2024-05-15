@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:shop_app/controllers/vocabStatistic.dart';
+import 'package:shop_app/screens/local/local_storage.dart';
 import 'package:shop_app/screens/test/components/alphabet.dart';
 import 'package:shop_app/screens/test/components/statistic.dart';
 import 'package:shop_app/screens/test/components/word_button.dart';
@@ -20,11 +23,13 @@ class _GameScreenState extends State<GameScreen> {
   int hintPosition = 0;
   Color color = Colors.yellow;
   String englishWord = '';
+  late FlutterTts flutterTts;
 
   late TextEditingController _controller;
   late List<dynamic> _vocabularies;
   int _currentIndex = 0;
   List<Map<String, dynamic>> results = [];
+  List<Map<String, dynamic>> vocabStatis = [];
 
   Widget createButton(index) {
     return Container(
@@ -54,6 +59,7 @@ class _GameScreenState extends State<GameScreen> {
         }
       }
     }
+    _speak(word, false);
   }
 
   void wordPress(int index) {
@@ -92,6 +98,7 @@ class _GameScreenState extends State<GameScreen> {
 
   @override
   void initState() {
+    flutterTts = FlutterTts();
     super.initState();
   }
 
@@ -104,13 +111,20 @@ class _GameScreenState extends State<GameScreen> {
     initWords();
   }
 
+  Future<void> _speak(String text, bool isEn) async {
+    await flutterTts.setLanguage(isEn ? "en-US" : "vi-VN");
+    await flutterTts.awaitSpeakCompletion(true);
+    await flutterTts.speak(text);
+  }
+
   @override
   void dispose() {
     _controller.dispose();
+    flutterTts.stop();
     super.dispose();
   }
 
-  void validateAndMoveOn() {
+  void validateAndMoveOn() async {
     String answer = hiddenWord;
     String correctAnswer = _vocabularies[_currentIndex]['englishWord'];
     if (answer.toLowerCase() != correctAnswer.toLowerCase()) {
@@ -118,6 +132,11 @@ class _GameScreenState extends State<GameScreen> {
         'vietnameseWord': _vocabularies[_currentIndex]['vietnameseWord'],
         'englishWord': correctAnswer,
         'userAnswer': answer.replaceAll("_", "")
+      });
+    }else{
+      vocabStatis.add({
+        'vocabularyId': _vocabularies[_currentIndex]['_id'],
+        'learningCount' : 1,
       });
     }
 
@@ -129,14 +148,18 @@ class _GameScreenState extends State<GameScreen> {
         color = Colors.yellow;
       });
     } else {
+      String _token = await LocalStorageService().getData('token');
+      await create_updateVocabStatistic(_token, results);
       Navigator.pushNamed(context, StatisticTest.routeName, arguments: {
         'totalQuestions': _vocabularies.length,
         'wrongAnswer': results.length,
         'vocabularies': _vocabularies,
         'topicId': _vocabularies[0]['topicId'],
         'results': results,
+        'vocabStatis': vocabStatis,
       });
     }
+    _speak(_vocabularies[_currentIndex]['vietnameseWord'], false);
   }
 
   @override

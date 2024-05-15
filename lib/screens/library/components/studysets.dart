@@ -77,7 +77,7 @@ class _StudySetsState extends State<StudySets> {
               children: List.generate(
                 filteredTopics.length,
                 (index) => TopicWidgetFactory.createWidget(
-                    topics[index], context, true),
+                    topics[index], context, true, isLibrary: true),
               ),
             ),
           ),

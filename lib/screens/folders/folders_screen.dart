@@ -25,6 +25,7 @@ class _FolderScreenState extends State<FolderScreen> {
   String folderID = "";
   bool _loading = true;
   int _sets = 0;
+  bool isLibrary = false;
 
   @override
   void initState() {
@@ -33,6 +34,7 @@ class _FolderScreenState extends State<FolderScreen> {
       if (ModalRoute.of(context)?.settings.arguments != null) {
         final args = ModalRoute.of(context)?.settings.arguments as Map;
         folderID = args['folderID'];
+        isLibrary = args['isLibrary'] ?? false;
         loadTopicDetails(folderID);
       }
     });
@@ -77,18 +79,16 @@ class _FolderScreenState extends State<FolderScreen> {
             color: Color(0xFF444E66),
           ),
           onPressed: () {
-            Navigator.pushNamedAndRemoveUntil(
+            if (isLibrary) {
+              Navigator.pop(context);
+            }
+            else{
+              Navigator.pushNamedAndRemoveUntil(
                 context, InitScreen.routeName, (route) => false);
+            }
           },
         ),
         actions: [
-          IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.add,
-                size: 30,
-                color: Color(0xFF444E66),
-              )),
           IconButton(
             icon: const Icon(
               Icons.more_horiz,

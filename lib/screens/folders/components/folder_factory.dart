@@ -9,6 +9,7 @@ class SpecialFolderFactory {
     String image,
     String name,
     bool isLarge,
+    {bool isLibrary = false}
   ) {
     return SpecialFolder(
       image: image,
@@ -27,6 +28,7 @@ class SpecialFolderFactory {
             'username': name,
             'image': image,
             'sets': filteredFolders["topicCount"],
+            'isLibrary' : isLibrary,
           },
         );
       },

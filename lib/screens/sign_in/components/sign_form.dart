@@ -164,10 +164,10 @@ class _SignFormState extends State<SignForm> {
                               text: data['error'],
                             );
                             return;
-                          } else if (remember == true) {
-                            final dataUser = json.encode(data['user']);
-                            await prefs.setString('data', dataUser);
                           }
+                          final dataUser = json.encode(data['user']);
+                          await prefs.setString('data', dataUser);
+                          
                           await prefs.setString('token', data['token']);
                           Navigator.pushNamedAndRemoveUntil(context, InitScreen.routeName, (route) => false,);
                         } catch (e) {

@@ -15,8 +15,6 @@ import 'components/flipcard_bottom.dart';
 import 'components/flipcard_middle.dart';
 import 'dart:io';
 import 'package:csv/csv.dart';
-import 'package:excel/excel.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:external_path/external_path.dart';
 
 class FlipCardScreen extends StatefulWidget {
@@ -36,6 +34,7 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
   String description = '';
   late String topicId;
   late bool isDiscover;
+  bool isLibrary = false;
   bool isStudyAll = true;
 
   @override
@@ -49,6 +48,7 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
     if (args is Map<String, dynamic> && args.containsKey("_id")) {
       topicId = args["_id"];
       isDiscover = args['isDiscover'] ?? false;
+      isLibrary = args['isLibrary'] ?? false;
       _loadTopics();
     } else {
       print('Invalid arguments. Cannot load topics.');
@@ -106,8 +106,15 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
         leading: IconButton(
             icon: const Icon(Icons.arrow_back,
                 size: 30, color: Color(0xFF444E66)),
-            onPressed: () => Navigator.pushNamedAndRemoveUntil(
-                context, InitScreen.routeName, (route) => false)),
+            onPressed: () => {
+                  if(isLibrary){
+                    Navigator.pop(context)
+                  }
+                  else{
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, InitScreen.routeName, (route) => false)
+                  }
+                }),
         actions: [_buildMoreOptionsButton(), const SizedBox(width: 10)],
       );
 
@@ -409,44 +416,6 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
       },
     );
   }
-
-  // Future<void> _showExportDialog(BuildContext context) async {
-  //   if (topics['vocabularies'] == null || topics['vocabularies'].isEmpty) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(
-  //         content: Text('There is no data to export.'),
-  //       ),
-  //     );
-  //     return;
-  //   }
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) {
-  //       return AlertDialog(
-  //         title: const Text("Export Options"),
-  //         content: Column(
-  //           mainAxisSize: MainAxisSize.min,
-  //           children: [
-  //             ListTile(
-  //               title: const Text("Export as CSV"),
-  //               onTap: () {
-  //                 Navigator.pop(context);
-  //                 _exportFile(context, "csv");
-  //               },
-  //             ),
-  //             ListTile(
-  //               title: const Text("Export as Excel"),
-  //               onTap: () {
-  //                 Navigator.pop(context);
-  //                 _exportFile(context, "excel");
-  //               },
-  //             ),
-  //           ],
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
 
   void _exportFile(BuildContext context) async {
     if (topics['vocabularies'] == null || topics['vocabularies'].isEmpty) {

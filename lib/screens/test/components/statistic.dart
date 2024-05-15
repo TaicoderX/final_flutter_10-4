@@ -1,11 +1,56 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:shop_app/controllers/learningStatistic.dart';
+import 'package:shop_app/controllers/vocabStatistic.dart';
 import 'package:shop_app/screens/flashcard/flashcard_screen.dart';
 import 'package:shop_app/screens/init_screen.dart';
+import 'package:shop_app/screens/local/local_storage.dart';
 import 'package:shop_app/screens/test/test_screen.dart';
 
-class StatisticTest extends StatelessWidget {
+class StatisticTest extends StatefulWidget {
   static const String routeName = '/statistic-test';
   const StatisticTest({Key? key}) : super(key: key);
+
+  @override
+  State<StatisticTest> createState() => _StatisticTestState();
+}
+
+class _StatisticTestState extends State<StatisticTest> {
+  bool _isLoading = true;
+  bool _hasCalledAPI = false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_hasCalledAPI) {
+      final args =
+          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+      List<Map<String, dynamic>> results = args['results'];
+      String topicId = args['topicId'];
+      callAPIToUpdate(results, topicId);
+      _hasCalledAPI = true;
+    }
+  }
+
+  void callAPIToUpdate(
+      List<Map<String, dynamic>> results, String topicId) async {
+    String token = await LocalStorageService().getData('token');
+    await create_updateVocabStatistic(token, results);
+    int random = Random().nextInt(10) + 1;
+    await updateLearningStatistic(topicId, token, random * 60);
+
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,17 +66,19 @@ class StatisticTest extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 2, 10, 57),
-        leading: IconButton(
-          icon: const Icon(
-            Icons.close,
-            color: Colors.blue,
-            size: 40,
-          ),
-          onPressed: () {
-            Navigator.pushNamedAndRemoveUntil(
-                context, InitScreen.routeName, (route) => false);
-          },
-        ),
+        leading: !_isLoading
+            ? IconButton(
+                icon: const Icon(
+                  Icons.close,
+                  color: Colors.blue,
+                  size: 40,
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
+              )
+            : null,
       ),
       backgroundColor: const Color.fromARGB(255, 2, 10, 57),
       body: SafeArea(
@@ -226,8 +273,8 @@ class StatisticTest extends StatelessWidget {
                         ),
                       ),
                       for (var result in results)
-                        _createBoxIncorrect(
-                            result['vietnameseWord'], result['englishWord'], result['userAnswer']),
+                        _createBoxIncorrect(result['vietnameseWord'],
+                            result['englishWord'], result['userAnswer']),
                     ],
                   ),
                 ),
@@ -243,7 +290,9 @@ class StatisticTest extends StatelessWidget {
       String question, String correctAns, String answer) {
     return Column(
       children: [
-        SizedBox(height: 20,),
+        SizedBox(
+          height: 20,
+        ),
         Container(
           padding: EdgeInsets.all(10),
           decoration: const BoxDecoration(

@@ -83,7 +83,7 @@ class _StatisticScreenState extends State<StatisticScreen> {
             child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Text(
-            'No one has learned this topic yet!',
+            'You have not learned any vocabulary yet!',
             style: TextStyle(color: Colors.white, fontSize: 24),
             textAlign: TextAlign.center,
           ),
@@ -184,7 +184,7 @@ class _StatisticScreenState extends State<StatisticScreen> {
               Container(
                 padding: EdgeInsets.all(10),
                 color:
-                    learningStatus == "learning" ? Colors.yellow : Colors.green,
+                    learningStatus == "started" ? Colors.yellow : learningStatus == "learning" ? Colors.green : Colors.purple,
                 width: double.infinity,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

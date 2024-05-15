@@ -72,11 +72,13 @@ class _FoldersState extends State<Folders> {
               children: List.generate(
                 folders.length,
                 (index) => SpecialFolderFactory.createList(
-                    folders[index],
-                    context,
-                    userInfo['profileImage'],
-                    userInfo["username"],
-                    true),
+                  folders[index],
+                  context,
+                  userInfo['profileImage'],
+                  userInfo["username"],
+                  true,
+                  isLibrary: true,
+                ),
               ),
             ),
           ),

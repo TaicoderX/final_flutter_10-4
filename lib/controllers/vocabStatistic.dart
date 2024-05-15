@@ -18,3 +18,24 @@ Future<Map<String, dynamic>> getVocabStatisticByTopicId(String topicId, String t
         'Failed to load topics: Server responded with ${response.statusCode}');
   }
 }
+
+Future<Map<String, dynamic>> create_updateVocabStatistic(String token, List<Map<String, dynamic>> vocabStats ) async {
+  Map<String, dynamic> data = {
+    "vocabStats": vocabStats
+  };
+  var response = await http.post(
+    Uri.parse(create_updateVocabStatisticUrl),
+    headers: {
+      'token': '$token',
+      'Content-Type': 'application/json',
+    },
+    body: jsonEncode(data),
+  );
+
+  if (response.statusCode == 200 || response.statusCode != 500) {
+    return json.decode(response.body);
+  } else {
+    throw Exception(
+        'Failed to load topics: Server responded with ${response.statusCode}');
+  }
+}
