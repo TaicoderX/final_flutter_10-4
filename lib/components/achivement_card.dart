@@ -38,13 +38,6 @@ class AchievementCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            // Text(
-            //   achievement.description,
-            //   style: Theme.of(context).textTheme.bodyMedium,
-            //   textAlign: TextAlign.center,
-            //   maxLines: 2,
-            //   overflow: TextOverflow.ellipsis,
-            // ),
             Center(
               child: Text(
                 "${achievement.name}",

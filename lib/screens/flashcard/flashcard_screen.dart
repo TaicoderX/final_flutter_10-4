@@ -1,5 +1,3 @@
-import 'package:dynamic_multi_step_form/dynamic_json_form.dart';
-import 'package:dynamic_multi_step_form/parts.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
