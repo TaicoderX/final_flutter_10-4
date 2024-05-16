@@ -26,7 +26,8 @@ class _SplashScreenState extends State<SplashScreen> {
       "image": "assets/images/intro1.png"
     },
     {
-      "text": "Elevate your knowledge with TNN App, \nan immersive study experience, \ndesigned for mastering subjects through flashcards.",
+      "text":
+          "Elevate your knowledge with TNN App, \nan immersive study experience, \ndesigned for mastering subjects through flashcards.",
       "image": "assets/images/splash_3.png"
     },
   ];
@@ -36,61 +37,67 @@ class _SplashScreenState extends State<SplashScreen> {
       body: SafeArea(
         child: SizedBox(
           width: double.infinity,
-          child: Column(
-            children: <Widget>[
-              Expanded(
-                flex: 3,
-                child: PageView.builder(
-                  onPageChanged: (value) {
-                    setState(() {
-                      currentPage = value;
-                    });
-                  },
-                  itemCount: splashData.length,
-                  itemBuilder: (context, index) => SplashContent(
-                    image: splashData[index]["image"],
-                    text: splashData[index]['text'],
+          child: SingleChildScrollView(
+            child: Container(
+              height: MediaQuery.of(context).size.height,
+              child: Column(
+                children: <Widget>[
+                  Expanded(
+                    flex: 3,
+                    child: PageView.builder(
+                      onPageChanged: (value) {
+                        setState(() {
+                          currentPage = value;
+                        });
+                      },
+                      itemCount: splashData.length,
+                      itemBuilder: (context, index) => SplashContent(
+                        image: splashData[index]["image"],
+                        text: splashData[index]['text'],
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              Expanded(
-                flex: 2,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    children: <Widget>[
-                      const Spacer(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(
-                          splashData.length,
-                          (index) => AnimatedContainer(
-                            duration: kAnimationDuration,
-                            margin: const EdgeInsets.only(right: 5),
-                            height: 6,
-                            width: currentPage == index ? 20 : 6,
-                            decoration: BoxDecoration(
-                              color: currentPage == index
-                                  ? kPrimaryColor
-                                  : const Color(0xFFD8D8D8),
-                              borderRadius: BorderRadius.circular(3),
+                  Expanded(
+                    flex: 2,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        children: <Widget>[
+                          const Spacer(),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(
+                              splashData.length,
+                              (index) => AnimatedContainer(
+                                duration: kAnimationDuration,
+                                margin: const EdgeInsets.only(right: 5),
+                                height: 6,
+                                width: currentPage == index ? 20 : 6,
+                                decoration: BoxDecoration(
+                                  color: currentPage == index
+                                      ? kPrimaryColor
+                                      : const Color(0xFFD8D8D8),
+                                  borderRadius: BorderRadius.circular(3),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
+                          const Spacer(flex: 3),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.pushNamed(
+                                  context, SignInScreen.routeName);
+                            },
+                            child: const Text("Continue"),
+                          ),
+                          const Spacer(),
+                        ],
                       ),
-                      const Spacer(flex: 3),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, SignInScreen.routeName);
-                        },
-                        child: const Text("Continue"),
-                      ),
-                      const Spacer(),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

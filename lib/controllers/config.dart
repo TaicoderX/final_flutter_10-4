@@ -1,7 +1,7 @@
 // String IP = "52.221.210.100";
-String IP = "192.168.10.33";
+// String IP = "192.168.10.33";
 
-String baseUrl = "http://$IP:3001/android";
+String baseUrl = "http://10.0.2.2:3001/android";
 
 String users = baseUrl + "/users";
 String register = users + "/register";
