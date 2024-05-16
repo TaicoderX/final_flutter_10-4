@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
@@ -107,13 +108,13 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
             icon: const Icon(Icons.arrow_back,
                 size: 30, color: Color(0xFF444E66)),
             onPressed: () => {
-                  if(isLibrary){
-                    Navigator.pop(context)
-                  }
-                  else{
-                    Navigator.pushNamedAndRemoveUntil(
-                        context, InitScreen.routeName, (route) => false)
-                  }
+                  if (isLibrary)
+                    {Navigator.pop(context)}
+                  else
+                    {
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, InitScreen.routeName, (route) => false)
+                    }
                 }),
         actions: [_buildMoreOptionsButton(), const SizedBox(width: 10)],
       );
@@ -426,22 +427,56 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
       );
       return;
     }
-    List<List<dynamic>> rows = [];
 
+    List<List<dynamic>> rows = [];
     for (int i = 0; i < topics['vocabularies'].length; i++) {
       List<dynamic> row = [];
       row.add(topics['vocabularies'][i]['englishWord']);
       row.add(topics['vocabularies'][i]['vietnameseWord']);
       rows.add(row);
     }
+
     String csv = const ListToCsvConverter().convert(rows);
 
-    String dir = await ExternalPath.getExternalStoragePublicDirectory(
-        ExternalPath.DIRECTORY_DOWNLOADS);
-    String file = "$dir";
+    try {
+      String filePath;
+      if (kIsWeb) {
+        // Web-specific code, if applicable
+        throw UnsupportedError('Web platform is not supported');
+      } else if (Platform.isAndroid || Platform.isIOS) {
+        String dir = await ExternalPath.getExternalStoragePublicDirectory(
+            ExternalPath.DIRECTORY_DOWNLOADS);
+        filePath = "$dir/TNN-App.csv";
+      } else {
+        Directory dir = await getDownloadsDirectory();
+        filePath = "${dir.path}/TNN-App.csv";
+      }
 
-    File f = File(file + "/TNN-App.csv");
+      File file = File(filePath);
+      await file.writeAsString(csv);
 
-    f.writeAsString(csv);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Exported to $filePath.'),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to export file. Please try again.'),
+        ),
+      );
+    }
+  }
+
+  Future<Directory> getDownloadsDirectory() async {
+    if (Platform.isWindows) {
+      return Directory("${Platform.environment['USERPROFILE']}\\Downloads");
+    } else if (Platform.isMacOS) {
+      return Directory("${Platform.environment['HOME']}/Downloads");
+    } else if (Platform.isLinux) {
+      return Directory("${Platform.environment['HOME']}/Downloads");
+    }
+    throw UnsupportedError('Unsupported platform');
   }
 }

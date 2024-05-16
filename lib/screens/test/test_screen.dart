@@ -59,7 +59,6 @@ class _GameScreenState extends State<GameScreen> {
         }
       }
     }
-    _speak(word, false);
   }
 
   void wordPress(int index) {
@@ -111,12 +110,6 @@ class _GameScreenState extends State<GameScreen> {
     initWords();
   }
 
-  Future<void> _speak(String text, bool isEn) async {
-    await flutterTts.setLanguage(isEn ? "en-US" : "vi-VN");
-    await flutterTts.awaitSpeakCompletion(true);
-    await flutterTts.speak(text);
-  }
-
   @override
   void dispose() {
     _controller.dispose();
@@ -159,7 +152,6 @@ class _GameScreenState extends State<GameScreen> {
         'vocabStatis': vocabStatis,
       });
     }
-    _speak(_vocabularies[_currentIndex]['vietnameseWord'], false);
   }
 
   @override
