@@ -1,15 +1,14 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
+import 'package:shop_app/components/IconSurf.dart';
 import 'package:shop_app/controllers/user.controller.dart';
 import 'package:shop_app/helper/keyboard.dart';
 
-import '../../../components/custom_surfix_icon.dart';
-import '../../../components/form_error.dart';
-import '../../../components/no_account_text.dart';
+import '../../../components/handle_error.dart';
+import '../../../components/NavigateToSignUp.dart';
 import '../../../constants.dart';
 
 class ForgotPassForm extends StatefulWidget {
@@ -33,27 +32,27 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
             keyboardType: TextInputType.emailAddress,
             onSaved: (newValue) => email = newValue,
             onChanged: (value) {
-              if (value.isNotEmpty && errors.contains(kEmailNullError)) {
+              if (value.isNotEmpty && errors.contains(emailNull)) {
                 setState(() {
-                  errors.remove(kEmailNullError);
+                  errors.remove(emailNull);
                 });
-              } else if (emailValidatorRegExp.hasMatch(value) &&
-                  errors.contains(kInvalidEmailError)) {
+              } else if (RegExpEmail.hasMatch(value) &&
+                  errors.contains(invalidEmail)) {
                 setState(() {
-                  errors.remove(kInvalidEmailError);
+                  errors.remove(invalidEmail);
                 });
               }
               return;
             },
             validator: (value) {
-              if (value!.isEmpty && !errors.contains(kEmailNullError)) {
+              if (value!.isEmpty && !errors.contains(emailNull)) {
                 setState(() {
-                  errors.add(kEmailNullError);
+                  errors.add(emailNull);
                 });
-              } else if (!emailValidatorRegExp.hasMatch(value) &&
-                  !errors.contains(kInvalidEmailError)) {
+              } else if (!RegExpEmail.hasMatch(value) &&
+                  !errors.contains(invalidEmail)) {
                 setState(() {
-                  errors.add(kInvalidEmailError);
+                  errors.add(invalidEmail);
                 });
               }
               return null;
@@ -62,19 +61,17 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
               labelText: "Email",
               hintText: "Enter your email",
               floatingLabelBehavior: FloatingLabelBehavior.always,
-              suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Mail.svg"),
+              suffixIcon: IconSurf(svg: "assets/icons/Mail.svg"),
             ),
           ),
           const SizedBox(height: 8),
-          FormError(errors: errors),
+          HandleError(errors: errors),
           const SizedBox(height: 8),
           ElevatedButton(
             onPressed: () async {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
                 KeyboardUtil.hideKeyboard(context);
-                print("Email: $email");
-                // EasyLoading.show(status: 'loading...');
                 QuickAlert.show(
                   context: context,
                   type: QuickAlertType.loading,
@@ -113,7 +110,7 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
             child: const Text("Continue"),
           ),
           const SizedBox(height: 16),
-          const NoAccountText(),
+          const NavigateToSignUp(),
         ],
       ),
     );

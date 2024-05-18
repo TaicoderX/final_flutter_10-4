@@ -1,14 +1,8 @@
 import 'package:flutter/material.dart';
 
-const kPrimaryColor = Colors.green;
-const kPrimaryLightColor = Color(0xFFFFECDF);
-const kPrimaryGradientColor = LinearGradient(
-  begin: Alignment.topLeft,
-  end: Alignment.bottomRight,
-  colors: [Color(0xFFFFA53E), Color(0xFFFF7643)],
-);
-const kSecondaryColor = Color(0xFF979797);
-const kTextColor = Colors.black;
+const mainColor = Colors.green;
+const greyColor = Color(0xFF979797);
+const blackColor = Colors.black;
 
 const kAnimationDuration = Duration(milliseconds: 200);
 
@@ -22,28 +16,18 @@ const headingStyle = TextStyle(
 const defaultDuration = Duration(milliseconds: 250);
 
 // Form Error
-final RegExp emailValidatorRegExp =
+final RegExp RegExpEmail =
     RegExp(r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
-const String kEmailNullError = "Please Enter your email";
-const String kInvalidEmailError = "Please Enter Valid Email";
-const String kPassNullError = "Please Enter your password";
-const String kShortPassError = "Password is too short";
-const String kMatchPassError = "Passwords don't match";
-const String kNamelNullError = "Please Enter your name";
-const String kPhoneNumberNullError = "Please Enter your phone number";
-const String kAddressNullError = "Please Enter your address";
-const String kTitleNullError = "Please Enter your title";
 
-final otpInputDecoration = InputDecoration(
-  contentPadding: const EdgeInsets.symmetric(vertical: 16),
-  border: outlineInputBorder(),
-  focusedBorder: outlineInputBorder(),
-  enabledBorder: outlineInputBorder(),
-);
+const String emailNull = "Please Enter your email";
+const String invalidEmail = "Please Enter Valid Email";
+const String passwordNull = "Please Enter your password";
+const String passwordShort = "Password is too short";
+const String passwordMatch = "Passwords don't match";
 
 OutlineInputBorder outlineInputBorder() {
   return OutlineInputBorder(
-    borderRadius: BorderRadius.circular(16),
-    borderSide: const BorderSide(color: kTextColor),
+    borderRadius: BorderRadius.circular(15),
+    borderSide: const BorderSide(color: blackColor),
   );
 }

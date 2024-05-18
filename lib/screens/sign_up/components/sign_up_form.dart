@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shop_app/components/IconSurf.dart';
 
-import '../../../components/custom_surfix_icon.dart';
-import '../../../components/form_error.dart';
+import '../../../components/handle_error.dart';
 import '../../../constants.dart';
 import '../../register_success/register_success_screen.dart';
 import '../../../controllers/user.controller.dart';
@@ -49,18 +49,18 @@ class _SignUpFormState extends State<SignUpForm> {
             onSaved: (newValue) => email = newValue,
             onChanged: (value) {
               if (value.isNotEmpty) {
-                removeError(error: kEmailNullError);
-              } else if (emailValidatorRegExp.hasMatch(value)) {
-                removeError(error: kInvalidEmailError);
+                removeError(error: emailNull);
+              } else if (RegExpEmail.hasMatch(value)) {
+                removeError(error: invalidEmail);
               }
               return;
             },
             validator: (value) {
               if (value!.isEmpty) {
-                addError(error: kEmailNullError);
+                addError(error: emailNull);
                 return "";
-              } else if (!emailValidatorRegExp.hasMatch(value)) {
-                addError(error: kInvalidEmailError);
+              } else if (!RegExpEmail.hasMatch(value)) {
+                addError(error: invalidEmail);
                 return "";
               }
               return null;
@@ -69,7 +69,7 @@ class _SignUpFormState extends State<SignUpForm> {
               labelText: "Email",
               hintText: "Enter your email",
               floatingLabelBehavior: FloatingLabelBehavior.always,
-              suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Mail.svg"),
+              suffixIcon: IconSurf(svg: "assets/icons/Mail.svg"),
             ),
           ),
           const SizedBox(height: 20),
@@ -78,18 +78,18 @@ class _SignUpFormState extends State<SignUpForm> {
             onSaved: (newValue) => password = newValue,
             onChanged: (value) {
               if (value.isNotEmpty) {
-                removeError(error: kPassNullError);
+                removeError(error: passwordNull);
               } else if (value.length >= 6) {
-                removeError(error: kShortPassError);
+                removeError(error: passwordShort);
               }
               password = value;
             },
             validator: (value) {
               if (value!.isEmpty) {
-                addError(error: kPassNullError);
+                addError(error: passwordNull);
                 return "";
               } else if (value.length < 6) {
-                addError(error: kShortPassError);
+                addError(error: passwordShort);
                 return "";
               }
               return null;
@@ -98,7 +98,7 @@ class _SignUpFormState extends State<SignUpForm> {
               labelText: "Password",
               hintText: "Enter your password",
               floatingLabelBehavior: FloatingLabelBehavior.always,
-              suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Lock.svg"),
+              suffixIcon: IconSurf(svg: "assets/icons/Lock.svg"),
             ),
           ),
           const SizedBox(height: 20),
@@ -107,18 +107,18 @@ class _SignUpFormState extends State<SignUpForm> {
             onSaved: (newValue) => conform_password = newValue,
             onChanged: (value) {
               if (value.isNotEmpty) {
-                removeError(error: kPassNullError);
+                removeError(error: passwordNull);
               } else if (value.isNotEmpty && password == conform_password) {
-                removeError(error: kMatchPassError);
+                removeError(error: passwordMatch);
               }
               conform_password = value;
             },
             validator: (value) {
               if (value!.isEmpty) {
-                addError(error: kPassNullError);
+                addError(error: passwordNull);
                 return "";
               } else if ((password != value)) {
-                addError(error: kMatchPassError);
+                addError(error: passwordMatch);
                 return "";
               }
               return null;
@@ -127,10 +127,10 @@ class _SignUpFormState extends State<SignUpForm> {
               labelText: "Confirm Password",
               hintText: "Re-enter your password",
               floatingLabelBehavior: FloatingLabelBehavior.always,
-              suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Lock.svg"),
+              suffixIcon: IconSurf(svg: "assets/icons/Lock.svg"),
             ),
           ),
-          FormError(errors: errors),
+          HandleError(errors: errors),
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () async {

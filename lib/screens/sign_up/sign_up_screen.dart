@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../components/socal_card.dart';
+import '../../components/RoundSocal.dart';
 import '../../constants.dart';
 import 'components/sign_up_form.dart';
 
@@ -47,15 +47,15 @@ class SignUpScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        SocalCard(
+                        RoundSocal(
                           icon: "assets/icons/google-icon.svg",
                           press: () {},
                         ),
-                        SocalCard(
+                        RoundSocal(
                           icon: "assets/icons/facebook-2.svg",
                           press: () {},
                         ),
-                        SocalCard(
+                        RoundSocal(
                           icon: "assets/icons/twitter.svg",
                           press: () {},
                         ),

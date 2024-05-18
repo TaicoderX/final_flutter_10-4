@@ -75,7 +75,7 @@ class _SplashScreenState extends State<SplashScreen> {
                                 width: currentPage == index ? 20 : 6,
                                 decoration: BoxDecoration(
                                   color: currentPage == index
-                                      ? kPrimaryColor
+                                      ? mainColor
                                       : const Color(0xFFD8D8D8),
                                   borderRadius: BorderRadius.circular(3),
                                 ),

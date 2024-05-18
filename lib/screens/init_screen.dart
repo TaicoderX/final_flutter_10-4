@@ -59,7 +59,7 @@ class _InitScreenState extends State<InitScreen> {
                   const EdgeInsets.only(left: 20, top: 5, right: 20, bottom: 5),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
-                color: kSecondaryColor.withOpacity(0.1),
+                color: greyColor.withOpacity(0.1),
               ),
               child: ListTile(
                 leading: const Icon(Icons.flip_to_front_rounded),
@@ -79,7 +79,7 @@ class _InitScreenState extends State<InitScreen> {
                   const EdgeInsets.only(left: 20, top: 5, right: 20, bottom: 5),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
-                color: kSecondaryColor.withOpacity(0.1),
+                color: greyColor.withOpacity(0.1),
               ),
               child: ListTile(
                 leading: const Icon(Icons.folder_copy_outlined),

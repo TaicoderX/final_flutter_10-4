@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:line_awesome_flutter/line_awesome_flutter.dart';
-import 'package:shop_app/components/achivement_card.dart';
+import 'package:shop_app/components/BoxAchieve.dart';
 import 'package:shop_app/controllers/achievement.dart';
 import 'package:shop_app/models/Achievement.dart';
 import 'package:shop_app/screens/achievements/components/achievement.dart';
@@ -41,7 +40,7 @@ class _AchievementScreenState extends State<AchievementScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(LineAwesomeIcons.angle_left),
+          icon: const Icon(Icons.arrow_back_sharp),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
@@ -62,7 +61,7 @@ class _AchievementScreenState extends State<AchievementScreen> {
                   mainAxisSpacing: 20,
                   crossAxisSpacing: 16,
                 ),
-                itemBuilder: (context, index) => AchievementCard(
+                itemBuilder: (context, index) => BoxAchieve(
                   achievement: achievements[index],
                   onPress: () => Navigator.pushNamed(
                     context,

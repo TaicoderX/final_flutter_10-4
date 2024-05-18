@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shop_app/components/NavigateToSignUp.dart';
 
-import '../../components/no_account_text.dart';
-import '../../components/socal_card.dart';
+import '../../components/RoundSocal.dart';
 import 'components/sign_form.dart';
 
 class SignInScreen extends StatelessWidget {
@@ -46,22 +46,22 @@ class SignInScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SocalCard(
+                      RoundSocal(
                         icon: "assets/icons/google-icon.svg",
                         press: () {},
                       ),
-                      SocalCard(
+                      RoundSocal(
                         icon: "assets/icons/facebook-2.svg",
                         press: () {},
                       ),
-                      SocalCard(
+                      RoundSocal(
                         icon: "assets/icons/twitter.svg",
                         press: () {},
                       ),
                     ],
                   ),
                   const SizedBox(height: 20),
-                  const NoAccountText(),
+                  const NavigateToSignUp(),
                 ],
               ),
             ),

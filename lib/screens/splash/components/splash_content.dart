@@ -24,7 +24,7 @@ class _SplashContentState extends State<SplashContent> {
           "TNN App",
           style: TextStyle(
             fontSize: 32,
-            color: kPrimaryColor,
+            color: mainColor,
             fontWeight: FontWeight.bold,
           ),
         ),

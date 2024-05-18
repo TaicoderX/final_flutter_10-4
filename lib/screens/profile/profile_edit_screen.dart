@@ -171,7 +171,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(LineAwesomeIcons.angle_left),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
@@ -203,7 +203,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                             _changeProfileImage();
                           },
                           child: const Icon(
-                            LineAwesomeIcons.pen,
+                            Icons.edit,
                             color: Colors.white,
                           ),
                         ),
@@ -252,7 +252,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                   decoration: const InputDecoration(
                     hintText: "Change Password",
                     hintStyle: TextStyle(fontWeight: FontWeight.bold),
-                    prefixIcon: Icon(LineAwesomeIcons.fingerprint),
+                    prefixIcon: Icon(Icons.fingerprint),
                     suffixIcon: Icon(
                       Icons.arrow_forward_ios,
                       color: Colors.blue,
