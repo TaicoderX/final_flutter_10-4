@@ -56,8 +56,7 @@ class _ProfileChangePasswordState extends State<ProfileChangePassword> {
               type: QuickAlertType.success,
               text: value['message'],
               onConfirmBtnTap: () {
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                    ProfileScreen.routeName, (Route<dynamic> route) => false);
+                Navigator.pop(context);
               },
             );
           } else {

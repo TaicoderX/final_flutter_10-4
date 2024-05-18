@@ -80,7 +80,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
           type: QuickAlertType.success,
           text: value['message'],
           onConfirmBtnTap: () {
-            Navigator.of(context).pop();
+            Navigator.pop(context);
           },
         );
         Navigator.pop(context, true);
@@ -107,7 +107,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 title: const Text('Photo Library'),
                 onTap: () async {
                   _pickImage(ImageSource.gallery);
-                  Navigator.of(context).pop();
+                  Navigator.pop(context);
                 },
               ),
               ListTile(
@@ -115,7 +115,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 title: const Text('Camera'),
                 onTap: () async {
                   _pickImage(ImageSource.camera);
-                  Navigator.of(context).pop();
+                  Navigator.pop(context);
                 },
               ),
             ],
@@ -172,7 +172,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => Navigator.pop(context),
         ),
       ),
       body: SingleChildScrollView(

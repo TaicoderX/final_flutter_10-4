@@ -108,7 +108,7 @@ class _FlipCardScreenState extends State<FlipCardScreen> {
             icon: const Icon(Icons.arrow_back,
                 size: 30, color: Color(0xFF444E66)),
             onPressed: () => {
-                  if (isLibrary)
+                  if (isLibrary || isDiscover)
                     {Navigator.pop(context)}
                   else
                     {
